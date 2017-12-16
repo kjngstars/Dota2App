@@ -1,0 +1,22 @@
+[
+  {
+    "routeName": "Home",
+    "name": "Home"
+  },
+  {
+    "routeName": "Matches",
+    "name": "Matches"
+  },
+  {
+    "routeName": "MatchSearch",
+    "name": "Match Search"
+  },
+  {
+    "routeName": "PlayerSearch",
+    "name": "Player Search"
+  },
+  {
+    "routeName": "HeroStats",
+    "name": "Heroes"
+  }
+]

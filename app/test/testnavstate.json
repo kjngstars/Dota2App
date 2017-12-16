@@ -1,0 +1,34 @@
+{
+  "routes": [
+    {
+      "routes": [
+        { "key": "Start", "routeName": "Start" },
+        {
+          "index": 0,
+          "routes": [
+            {
+              "type": "Navigation/NAVIGATE",
+              "routeName": "MatchCategory",
+              "routes": [
+                { "key": "Professional", "routeName": "Professional" },
+                { "key": "HighMMR", "routeName": "HighMMR" },
+                { "key": "LowMMR", "routeName": "LowMMR" }
+              ],
+              "index": 1,
+              "key": "id-1512613362823-1"
+            }
+          ],
+          "key": "Matches",
+          "routeName": "Matches"
+        },
+        { "key": "MatchSearch", "routeName": "MatchSearch" }
+      ],
+      "index": 1,
+      "key": "DrawerClose",
+      "routeName": "DrawerClose"
+    },
+    { "key": "DrawerOpen", "routeName": "DrawerOpen" },
+    { "key": "DrawerToggle", "routeName": "DrawerToggle" }
+  ],
+  "index": 0
+}
