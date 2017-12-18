@@ -332,16 +332,31 @@ class HeroStatPublic extends Component {
   }
 
   renderRowDropdown(rowData, rowId) {
-    return (
-      <View styleName="horizontal h-start v-center sm-gutter">
-        <Text style={{ marginRight: 5 }}>{rowData.name}</Text>
-        <Image source={rowData.imgUrl} styleName="small-avatar" />
-      </View>
-    );
+    if (rowId == this.state.selectedRankIndex) {
+      return (
+        <View
+          styleName="horizontal h-start v-center sm-gutter"
+          style={{ backgroundColor: "rgb(46, 47, 64)"}}
+        >
+          <Text style={{ marginRight: 5, color: themeColors.orange, fontWeight: 'bold'  }}>{rowData.name}</Text>
+          <Image source={rowData.imgUrl} styleName="small-avatar" />
+        </View>
+      );
+    } else {
+      return (
+        <View
+          styleName="horizontal h-start v-center sm-gutter"
+          style={{ backgroundColor: "rgb(46, 47, 64)" }}
+        >
+          <Text style={{ marginRight: 5, color: "#fff" }}>{rowData.name}</Text>
+          <Image source={rowData.imgUrl} styleName="small-avatar" />
+        </View>
+      );
+    }
   }
 
   renderSeparatorDropdown() {
-    return <Line color={themeColors.greyBorder} />;
+    return <Line color={"rgb(46, 47, 64)"} />;
   }
 
   sortByHeroName(a, b) {
@@ -457,6 +472,7 @@ class HeroStatPublic extends Component {
               renderRow={this.renderRowDropdown}
               onSelect={this.onOptionSelected}
               renderSeparator={this.renderSeparatorDropdown}
+              dropdownStyle={{borderWidth: 1, borderColor: 'rgba(46, 47, 64, 0.6)'}}
             >
               <View styleName="horizontal h-center v-center">
                 <Icon name="drop-down" style={{ color: "#fff" }} />

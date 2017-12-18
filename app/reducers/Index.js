@@ -6,6 +6,8 @@ import highMMRMatchesState from "./HighMMRMatchReducer";
 import lowMMRMatchesState from "./LowMMRMatchReducer";
 import playerResultsState from "./PlayerSearchReducer";
 import heroStatsState from "./HeroStatReducer";
+import heroRankingState from "./HeroRankingReducer";
+import heroOverviewState from "./HeroOverviewReducer";
 
 const rootReducer = combineReducers({
   nav,
@@ -14,7 +16,9 @@ const rootReducer = combineReducers({
   highMMRMatchesState,
   lowMMRMatchesState,
   playerResultsState,
-  heroStatsState
+  heroStatsState,
+  heroRankingState,
+  heroOverviewState
 });
 
 export default rootReducer;

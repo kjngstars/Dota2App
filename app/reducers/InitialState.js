@@ -36,5 +36,12 @@ export default {
     isLoadingHeroStats: false,
     isEmptyHeroStats: false,
     heroStats: []
-  }
+  },
+  heroData: {},
+  heroRanking:{
+    isLoadingHeroRanking: false,
+    isEmptyHeroRanking: false,
+    heroRanking: []
+  },
+  
 };

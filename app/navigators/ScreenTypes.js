@@ -23,4 +23,7 @@ export default {
   HeroStatPro: "HeroStatProfessional",
   HeroStatPublic: "HeroStatPublic",
   HeroStats: "HeroStats",
+  HeroDetails: "HeroDetails",
+  HeroOverview: "HeroOverview",
+  HeroRanking: "HeroRanking",
 };

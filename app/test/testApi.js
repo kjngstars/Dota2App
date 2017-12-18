@@ -6,6 +6,7 @@ import lowmmrmatch from "./lowmmrmatch.json";
 import proplayers from "./proplayers.json";
 import searchplayer from "./searchplayer.json";
 import herostat from "./herostat.json";
+import heroranking from "./heroranking.json";
 
 const delay = 1000;
 export const testId = 3558108479;
@@ -67,6 +68,15 @@ export function getHeroStats(){
   return new Promise((resolve, reject) => {
     setTimeout(() => {     
       resolve(herostat);
+    }, delay);
+  });
+}
+
+//https://api.opendota.com/api/rankings?hero_id=102
+export function getHeroRanking(){
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {     
+      resolve(heroranking);
     }, delay);
   });
 }

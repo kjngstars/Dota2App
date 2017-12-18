@@ -11,6 +11,7 @@ import MatchNavigator from "./MatchNavigator";
 import SearchForMatch from "../containers/SearchForMatch";
 import PlayerSearch from "../containers/PlayerSearch";
 import HeroStatNavigator from "../navigators/HeroStatNavigator";
+import HeroDetailsNavigator from "../navigators/HeroDetailsNavigator";
 
 
 const RootStack = StackNavigator(
@@ -29,6 +30,9 @@ const RootStack = StackNavigator(
     },
     [screenTypes.HeroStats]: {
       screen: HeroStatNavigator
+    },
+    [screenTypes.HeroDetails]: {
+      screen: HeroDetailsNavigator
     },
   },
   Object.assign({}, stackConfig, {

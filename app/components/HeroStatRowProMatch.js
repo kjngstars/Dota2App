@@ -4,12 +4,13 @@ import themeColors from "../themes/colors";
 import { connectStyle } from "@shoutem/theme";
 import { dimensionRelativeToIphone } from "@shoutem/ui/theme";
 import PercentStat from "../components/PercentStat";
+import Ripple from "react-native-material-ripple";
 
 const DRTI = dimensionRelativeToIphone;
 
 export const HERO_STAT_ROW_HEIGHT = 50;
 
-const HeroStatRowProMatch = ({ style, heroStat, index }) => {
+const HeroStatRowProMatch = ({ style, heroStat, index, onPress }) => {
   let style_name = "horizontal even";
   let content = <View />;
   if (index % 2) {
@@ -20,12 +21,17 @@ const HeroStatRowProMatch = ({ style, heroStat, index }) => {
     <View styleName={style_name} style={style.container}>
       <View style={style.hero}>
         <Image source={heroStat.heroImg} style={style.heroAvatar} />
-        <View styleName="horizontal h-start">
-          <Text style={{ fontSize: 12, color: themeColors.action }}>
-            {heroStat.heroName}
-          </Text>
-          <Icon name="right-arrow" style={{ fontSize: 13, color: themeColors.action }}/>
-        </View>
+        <Ripple onPress={onPress}>
+          <View styleName="horizontal h-start">
+            <Text style={{ fontSize: 12, color: themeColors.action }}>
+              {heroStat.heroName}
+            </Text>
+            <Icon
+              name="right-arrow"
+              style={{ fontSize: 13, color: themeColors.action }}
+            />
+          </View>
+        </Ripple>
       </View>
       <View style={style.statContainer}>
         <View style={style.stat}>

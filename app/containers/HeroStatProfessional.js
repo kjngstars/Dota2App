@@ -13,6 +13,8 @@ import { createGroupedArray, round } from "../utils/utilsFunction";
 
 import themeColors from "../themes/colors";
 import * as heroStatActions from "../actions/HeroStatAction";
+import { navigateToMenuScreen } from "../actions/NavigationAction";
+import { sendHeroData } from "../actions/HeroOverviewActions";
 import { connectStyle } from "@shoutem/theme";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -77,7 +79,9 @@ class HeroStatProfessional extends Component {
     let processedData = [];
 
     for (let i = 0; i < heroStats.length; i++) {
-      let processedStat = {};
+      let processedStat = {
+        heroData: {},
+      };
       const heroStat = heroStats[i];
 
       processedStat.id = heroStat["id"];
@@ -106,14 +110,52 @@ class HeroStatProfessional extends Component {
         ? 0
         : round(proWin / proPick * 100, 1);
 
+      //hero data
+      processedStat.heroData.name = heroStat["localized_name"];
+      processedStat.heroData.primaryAttribute = heroStat["primary_attr"];
+      processedStat.heroData.attackType = heroStat["attack_type"];
+      processedStat.heroData.roles = heroStat["roles"].join(", ");
+      processedStat.heroData.img = getHeroImage(heroStat["id"]);
+      processedStat.heroData.baseHealth = heroStat["base_health"];
+      processedStat.heroData.baseHealthRegen = heroStat["base_health_regen"];
+      processedStat.heroData.baseMana = heroStat["base_mana"];
+      processedStat.heroData.baseManaRegen = heroStat["base_mana_regen"];
+      processedStat.heroData.baseArmor = heroStat["base_armor"];
+      processedStat.heroData.baseMR = heroStat["base_mr"];
+      processedStat.heroData.baseAttackMin = heroStat["base_attack_min"];
+      processedStat.heroData.baseAttackMax = heroStat["base_attack_max"];
+      processedStat.heroData.baseStr = heroStat["base_str"];
+      processedStat.heroData.baseAgi = heroStat["base_agi"];
+      processedStat.heroData.baseInt = heroStat["base_int"];
+      processedStat.heroData.strGain = heroStat["str_gain"];
+      processedStat.heroData.agiGain = heroStat["agi_gain"];
+      processedStat.heroData.intGain = heroStat["int_gain"];
+      processedStat.heroData.attackRange = heroStat["attack_range"];
+      processedStat.heroData.projectileSpeed = heroStat["projectile_speed"];
+      processedStat.heroData.attackRate = heroStat["attack_rate"];
+      processedStat.heroData.moveSpeed = heroStat["move_speed"];
+      processedStat.heroData.turnRate = heroStat["turn_rate"];
+      processedStat.heroData.cmEnabled = heroStat["cm_enabled"];
+
       processedData[i] = processedStat;
     }
 
     return processedData;
   }
 
+  onPressRow(heroData) {
+    this.props.sendHeroData(heroData);
+    this.props.navigation.dispatch(navigateToMenuScreen(ScreenTypes.HeroOverview));
+  }
+
   renderItem({ item, index }) {
-    return <HeroStatRowProMatch heroStat={item} index={index} />;
+    return (
+      <HeroStatRowProMatch
+        heroStat={item}
+        index={index}
+        onPress={() => this.onPressRow(item.heroData)}
+      />
+    );
   }
 
   getItemLayout(data, index) {
@@ -295,7 +337,7 @@ HeroStatProfessional.navigationOptions = {
 };
 
 const styles = {
-  container: {    
+  container: {
     paddingBottom: 10,
     paddingTop: 10,
     paddingLeft: 15,
@@ -321,12 +363,13 @@ function mapStateToProps(state) {
   };
 }
 
-function mapDispatchToprops(dispatch) {
+function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators(heroStatActions, dispatch)
+    actions: bindActionCreators(heroStatActions, dispatch),
+    sendHeroData: heroData => dispatch(sendHeroData(heroData))
   };
 }
 
 export default connectStyle("dota2app.HeroProfessionalScreen", styles)(
-  connect(mapStateToProps, mapDispatchToprops)(HeroStatProfessional)
+  connect(mapStateToProps, mapDispatchToProps)(HeroStatProfessional)
 );
