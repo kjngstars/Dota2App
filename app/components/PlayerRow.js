@@ -6,7 +6,7 @@ import { dimensionRelativeToIphone } from "@shoutem/ui/theme";
 
 const DRTI = dimensionRelativeToIphone;
 
-export const PLAYER_ROW_HEIGHT = 40;
+export const PLAYER_ROW_HEIGHT = 50;
 
 const PlayerRow = ({ style, player, index }) => {
   let style_name = "horizontal space-between v-center even";
@@ -17,7 +17,7 @@ const PlayerRow = ({ style, player, index }) => {
 
   if (player.team_name) {
     content = (
-      <View styleName="horizontal space-between v-center" style={{ flex: 5 }}>
+      <View styleName={style_name} style={{ flex: 5 }}>
         <View styleName="horizontal h-start v-center">
           <Image
             source={{ uri: player.avatarfull }}

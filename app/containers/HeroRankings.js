@@ -29,16 +29,23 @@ class HeroRankings extends Component {
     this.getItemLayout = this.getItemLayout.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
     this.keyExtractor = this.keyExtractor.bind(this);
-
     this.processRankingData = this.processRankingData.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.heroRanking != nextProps.heroRanking) {
+    if (
+      nextProps.heroRanking &&
+      nextProps.heroRanking.length > 0 &&
+      this.props.heroRanking != nextProps.heroRanking
+    ) {
       const rankingData = this.processRankingData(nextProps.heroRanking);
 
       this.setState({ rankingData });
     }
+  }
+
+  componentDidMount() {
+    this.props.actions.testFetchHeroRanking();
   }
 
   getGetOrdinal(n) {
@@ -49,17 +56,24 @@ class HeroRankings extends Component {
 
   processRankingData(data) {
     let playerRanking = [];
-    const highestScore = data.rankings[0].score;
+    const highestScore = data[0].score;
 
-    for (let i = 0; i < data.rankings.length; i++) {
+    for (let i = 0; i < data.length; i++) {
       let playerRank = {};
       let rankData = data[i];
 
       playerRank.accountId = rankData["account_id"];
-      playerRank.ranking = getGetOrdinal(i + 1);
+      playerRank.ranking = this.getGetOrdinal(i + 1);
       playerRank.avatar = rankData["avatar"];
+
       playerRank.name = rankData["name"];
+      if (rankData["name"] && rankData["name"].length > 16)
+        playerRank.name = rankData["name"].substring(0, 13) + "...";
       playerRank.personaname = rankData["personaname"];
+      if (rankData["personaname"] && rankData["personaname"].length > 16)
+        playerRank.personaname =
+          rankData["personaname"].substring(0, 13) + "...";
+
       playerRank.score = Math.round(rankData["score"]);
       playerRank.scorePercent = round(rankData.score * 100 / highestScore, 1);
 
@@ -70,7 +84,7 @@ class HeroRankings extends Component {
   }
 
   renderItem({ item, index }) {
-    return <HeroRankingRow playerRank={item} />;
+    return <HeroRankingRow playerRank={item} index={index} />;
   }
 
   onRefresh() {}
@@ -93,7 +107,7 @@ class HeroRankings extends Component {
     const styles = this.props.style;
     const { isLoadingHeroRanking } = this.props;
 
-    let content = <View />;
+    let content = <View styleName="fill-parent dota2" />;
 
     const { rankingData, screenHeight } = this.state;
 
@@ -104,43 +118,50 @@ class HeroRankings extends Component {
         </View>
       );
     } else if (rankingData.length > 0) {
-      <ScrollView style={styles.container}>
-        <Text style={{ color: "#fff", alignSelf: "center", marginBottom: 5 }}>
-          Rankings - Hero
-        </Text>
-        <View style={{ flex: 1, height: screenHeight, paddingBottom: 10 }}>
-          <View style={styles.header}>
-            <View style={{ flex: 1 }}>
-              <TouchableOpacity>
-                <Text style={{ color: "#fff", marginRight: 5 }}>HERO</Text>
-              </TouchableOpacity>
+      content = (
+        <ScrollView style={styles.container}>
+          <Text style={{ color: "#fff", alignSelf: "center", marginBottom: 5 }}>
+            Rankings - Hero
+          </Text>
+          <View style={{ flex: 1, height: screenHeight, paddingBottom: 10 }}>
+            <View style={styles.header}>
+              <View style={{ flex: 1.5 }}>
+                <TouchableOpacity>
+                  <Text style={{ color: "#fff", marginRight: 5 }}>RANK</Text>
+                </TouchableOpacity>
+              </View>
+              <View styleName="horizontal h-center" style={{ flex: 5 }}>
+                <TouchableOpacity>
+                  <Text style={{ color: "#fff", marginRight: 5 }}>PLAYER</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={{ flex: 3.5 }}>
+                <TouchableOpacity>
+                  <Text style={{ color: "#fff", marginRight: 5 }}>SCORE</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-            <View style={{ flex: 1 }}>
-              <TouchableOpacity>
-                <Text style={{ color: "#fff", marginRight: 5 }}>PICK%</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={{ flex: 1 }}>
-              <TouchableOpacity>
-                <Text style={{ color: "#fff", marginRight: 5 }}>BAN%</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
 
-          <FlatList
-            data={rankingData}
-            renderItem={this.renderItem}
-            getItemLayout={this.getItemLayout}            
-            keyExtractor={this.keyExtractor}
-            initialNumToRender={10}
-          />
-        </View>
-      </ScrollView>;
+            <FlatList
+              data={rankingData}
+              renderItem={this.renderItem}
+              getItemLayout={this.getItemLayout}
+              keyExtractor={this.keyExtractor}
+              initialNumToRender={10}
+            />
+          </View>
+        </ScrollView>
+      );
     }
 
     return content;
   }
 }
+
+HeroRankings.navigationOptions = {
+  title: "Hero Rankings",
+  tabBarLabel: "Rankings"
+};
 
 const styles = {
   container: {
@@ -156,7 +177,7 @@ const styles = {
     paddingRight: 5,
     flexDirection: "row",
     alignItems: "center",
-    maxHeight: 40,
+    maxHeight: 30,
     backgroundColor: "rgba(0,0,0,0.3)"
   }
 };
@@ -175,6 +196,6 @@ function mapDispatchToprops(dispatch) {
   };
 }
 
-export default connectStyle("dota2app.HeroRanking", styles)(
+export default connectStyle("dota2app.HeroRankings", styles)(
   connect(mapStateToProps, mapDispatchToprops)(HeroRankings)
 );

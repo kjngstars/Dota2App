@@ -276,7 +276,7 @@ class HeroStatProfessional extends Component {
       screenHeight
     } = this.state;
 
-    let content = <View />;
+    let content = <View styleName="fill-parent dota2"/>;
 
     if (isLoadingHeroStats) {
       content = (
