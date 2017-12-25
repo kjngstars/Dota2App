@@ -10,6 +10,10 @@ import heroRankingState from "./HeroRankingReducer";
 import heroOverviewState from "./HeroOverviewReducer";
 import durationRecordsState from "./DurationRecordReducer";
 import killsRecordsState from "./KillsRecordReducer";
+import deathsRecordState from "./DeathsRecordReducer";
+import assistsRecordState from "./AssistsRecordReducer";
+import gpmRecordState from "./GPMRecordReducer";
+import xpmRecordState from "./XPMRecordReducer";
 
 const rootReducer = combineReducers({
   nav,
@@ -23,6 +27,10 @@ const rootReducer = combineReducers({
   heroOverviewState,
   durationRecordsState,
   killsRecordsState,
+  deathsRecordState,
+  assistsRecordState,
+  gpmRecordState,
+  xpmRecordState,
 });
 
 export default rootReducer;

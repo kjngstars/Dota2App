@@ -29,4 +29,7 @@ export default {
   Records: "Records",
   DurationRecord: "DurationRecord",
   KillsRecord: "KillsRecord",
+  DeathsRecord: "DeathsRecord",
+  AssistsRecord: "AssistsRecord",
+  GPMRecord: "GPMRecord",
 };

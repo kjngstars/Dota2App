@@ -21,18 +21,17 @@ import themeColors from "../themes/colors";
 import { connectStyle } from "@shoutem/theme";
 import { connect } from "react-redux";
 import { getGetOrdinal } from "../utils/utilsFunction";
-import { testFetchKillsRecord } from "../actions/KillsRecordAction";
+import { testFetchGPMRecord } from "../actions/GPMRecordAction";
 import { RECORD_ROW_HEIGHT } from "../components/RecordRow";
-
 
 import moment from "moment";
 
-class KillsRecord extends Component {
+class GPMRecord extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      killsRecords: [],
+      gpmRecords: [],
       refreshing: false,
       currentPageIndex: 0
     };
@@ -48,14 +47,14 @@ class KillsRecord extends Component {
   componentWillMount() {}
 
   componentWillReceiveProps(nextProps) {
-    if (this.props != nextProps && nextProps.killsRecords.length > 0) {
-      const records = processRecord(nextProps.killsRecords);
-      this.setState({ killsRecords: createGroupedArray(records, 20) });
+    if (this.props != nextProps && nextProps.gpmRecords.length > 0) {
+      const records = processRecord(nextProps.gpmRecords);
+      this.setState({ gpmRecords: createGroupedArray(records, 20) });
     }
   }
 
   componentDidMount() {
-    this.props.actions.testFetchKillsRecord();
+    this.props.actions.testFetchGPMRecord();
   }
 
   onPage(index) {
@@ -85,8 +84,8 @@ class KillsRecord extends Component {
   }
 
   renderFooter() {
-    const { currentPageIndex, killsRecords } = this.state;
-    const totalPages = killsRecords.length;
+    const { currentPageIndex, gpmRecords } = this.state;
+    const totalPages = gpmRecords.length;
 
     return (
       <Pagination
@@ -101,23 +100,21 @@ class KillsRecord extends Component {
   renderHeader() {
     const styles = this.props.style;
 
-    return (
-      <Header headers={["RANK","KILLS","ID", ""]}/>
-    );
+    return <Header headers={["RANK", "GPM", "ID", ""]} />;
   }
 
   render() {
-    const { isLoadingKillsRecord } = this.props;
-    const { killsRecords, currentPageIndex } = this.state;
+    const { isLoadingGPMRecord } = this.props;
+    const { gpmRecords, currentPageIndex } = this.state;
     const styles = this.props.style;
     let content = <View />;
 
-    if (isLoadingKillsRecord) {
+    if (isLoadingGPMRecord) {
       content = <Loading />;
-    } else if (killsRecords.length > 0) {
+    } else if (gpmRecords.length > 0) {
       content = (
         <FlatList
-          data={killsRecords[currentPageIndex]}
+          data={gpmRecords[currentPageIndex]}
           renderItem={this.renderItem}
           getItemLayout={this.getItemLayout}
           //refreshing={this.state.refreshing}
@@ -138,9 +135,9 @@ class KillsRecord extends Component {
   }
 }
 
-KillsRecord.navigationOptions = {
-  title: "Kills Records",
-  tabBarLabel: "K"
+GPMRecord.navigationOptions = {
+  title: "GPM Records",
+  tabBarLabel: "GPM"
 };
 
 const styles = {
@@ -149,23 +146,23 @@ const styles = {
     paddingTop: 10,
     paddingLeft: 15,
     paddingRight: 15
-  }, 
+  }
 };
 
 function mapStateToProps(state) {
   return {
-    isLoadingKillsRecord: state.killsRecordsState.isLoadingKillsRecord,
-    isEmptyKillsRecord: state.killsRecordsState.isEmptyKillsRecord,
-    killsRecords: state.killsRecordsState.killsRecords
+    isLoadingGPMRecord: state.gpmRecordState.isLoadingGPMRecord,
+    isEmptyGPMRecord: state.gpmRecordState.isEmptyGPMRecord,
+    gpmRecords: state.gpmRecordState.gpmRecords
   };
 }
 
 function mapDispatchToprops(dispatch) {
   return {
-    actions: bindActionCreators({ testFetchKillsRecord }, dispatch)
+    actions: bindActionCreators({ testFetchGPMRecord }, dispatch)
   };
 }
 
-export default connectStyle("dota2app.KillsRecord", styles)(
-  connect(mapStateToProps, mapDispatchToprops)(KillsRecord)
+export default connectStyle("dota2app.GPMRecord", styles)(
+  connect(mapStateToProps, mapDispatchToprops)(GPMRecord)
 );

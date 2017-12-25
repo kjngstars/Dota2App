@@ -108,10 +108,35 @@ export function getKillsRecord(){
   });
 }
 
-export function getAssistsRecord(){
+export function getDeathsRecord(){
   return new Promise((resolve, reject) => {
     setTimeout(() => {     
-      resolve(record_kills);
+      resolve(record_deaths);
     }, delay);
   });
 }
+
+export function getAssistsRecord(){
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {     
+      resolve(record_assists);
+    }, delay);
+  });
+}
+
+export function getGPMRecord(){
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {     
+      resolve(record_gpm);
+    }, delay);
+  });
+}
+
+export function getXPMRecord(){
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {     
+      resolve(record_xpm);
+    }, delay);
+  });
+}
+

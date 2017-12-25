@@ -177,7 +177,7 @@ class DurationRecord extends Component {
 
 DurationRecord.navigationOptions = {
   title: "Duration Records",
-  tabBarLabel: "Duration"
+  tabBarLabel: "Dur"
 };
 
 const styles = {

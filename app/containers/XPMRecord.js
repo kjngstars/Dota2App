@@ -21,18 +21,17 @@ import themeColors from "../themes/colors";
 import { connectStyle } from "@shoutem/theme";
 import { connect } from "react-redux";
 import { getGetOrdinal } from "../utils/utilsFunction";
-import { testFetchKillsRecord } from "../actions/KillsRecordAction";
+import { testFetchXPMRecord } from "../actions/XPMRecordAction";
 import { RECORD_ROW_HEIGHT } from "../components/RecordRow";
-
 
 import moment from "moment";
 
-class KillsRecord extends Component {
+class XPMRecord extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      killsRecords: [],
+      xpmRecords: [],
       refreshing: false,
       currentPageIndex: 0
     };
@@ -48,14 +47,14 @@ class KillsRecord extends Component {
   componentWillMount() {}
 
   componentWillReceiveProps(nextProps) {
-    if (this.props != nextProps && nextProps.killsRecords.length > 0) {
-      const records = processRecord(nextProps.killsRecords);
-      this.setState({ killsRecords: createGroupedArray(records, 20) });
+    if (this.props != nextProps && nextProps.xpmRecords.length > 0) {
+      const records = processRecord(nextProps.xpmRecords);
+      this.setState({ xpmRecords: createGroupedArray(records, 20) });
     }
   }
 
   componentDidMount() {
-    this.props.actions.testFetchKillsRecord();
+    this.props.actions.testFetchXPMRecord();
   }
 
   onPage(index) {
@@ -85,8 +84,8 @@ class KillsRecord extends Component {
   }
 
   renderFooter() {
-    const { currentPageIndex, killsRecords } = this.state;
-    const totalPages = killsRecords.length;
+    const { currentPageIndex, xpmRecords } = this.state;
+    const totalPages = xpmRecords.length;
 
     return (
       <Pagination
@@ -101,23 +100,21 @@ class KillsRecord extends Component {
   renderHeader() {
     const styles = this.props.style;
 
-    return (
-      <Header headers={["RANK","KILLS","ID", ""]}/>
-    );
+    return <Header headers={["RANK", "XPM", "ID", ""]} />;
   }
 
   render() {
-    const { isLoadingKillsRecord } = this.props;
-    const { killsRecords, currentPageIndex } = this.state;
+    const { isLoadingXPMRecord } = this.props;
+    const { xpmRecords, currentPageIndex } = this.state;
     const styles = this.props.style;
     let content = <View />;
 
-    if (isLoadingKillsRecord) {
+    if (isLoadingXPMRecord) {
       content = <Loading />;
-    } else if (killsRecords.length > 0) {
+    } else if (xpmRecords.length > 0) {
       content = (
         <FlatList
-          data={killsRecords[currentPageIndex]}
+          data={xpmRecords[currentPageIndex]}
           renderItem={this.renderItem}
           getItemLayout={this.getItemLayout}
           //refreshing={this.state.refreshing}
@@ -138,9 +135,9 @@ class KillsRecord extends Component {
   }
 }
 
-KillsRecord.navigationOptions = {
-  title: "Kills Records",
-  tabBarLabel: "K"
+XPMRecord.navigationOptions = {
+  title: "XPM Records",
+  tabBarLabel: "XPM"
 };
 
 const styles = {
@@ -149,23 +146,23 @@ const styles = {
     paddingTop: 10,
     paddingLeft: 15,
     paddingRight: 15
-  }, 
+  }
 };
 
 function mapStateToProps(state) {
   return {
-    isLoadingKillsRecord: state.killsRecordsState.isLoadingKillsRecord,
-    isEmptyKillsRecord: state.killsRecordsState.isEmptyKillsRecord,
-    killsRecords: state.killsRecordsState.killsRecords
+    isLoadingXPMRecord: state.xpmRecordState.isLoadingXPMRecord,
+    isEmptyXPMRecord: state.xpmRecordState.isEmptyXPMRecord,
+    xpmRecords: state.xpmRecordState.xpmRecords
   };
 }
 
 function mapDispatchToprops(dispatch) {
   return {
-    actions: bindActionCreators({ testFetchKillsRecord }, dispatch)
+    actions: bindActionCreators({ testFetchXPMRecord }, dispatch)
   };
 }
 
-export default connectStyle("dota2app.KillsRecord", styles)(
-  connect(mapStateToProps, mapDispatchToprops)(KillsRecord)
+export default connectStyle("dota2app.XPMRecord", styles)(
+  connect(mapStateToProps, mapDispatchToprops)(XPMRecord)
 );

@@ -21,18 +21,17 @@ import themeColors from "../themes/colors";
 import { connectStyle } from "@shoutem/theme";
 import { connect } from "react-redux";
 import { getGetOrdinal } from "../utils/utilsFunction";
-import { testFetchKillsRecord } from "../actions/KillsRecordAction";
+import { testFetchDeathsRecord } from "../actions/DeathsRecordAction";
 import { RECORD_ROW_HEIGHT } from "../components/RecordRow";
-
 
 import moment from "moment";
 
-class KillsRecord extends Component {
+class DeathsRecord extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      killsRecords: [],
+      deathsRecords: [],
       refreshing: false,
       currentPageIndex: 0
     };
@@ -48,14 +47,14 @@ class KillsRecord extends Component {
   componentWillMount() {}
 
   componentWillReceiveProps(nextProps) {
-    if (this.props != nextProps && nextProps.killsRecords.length > 0) {
-      const records = processRecord(nextProps.killsRecords);
-      this.setState({ killsRecords: createGroupedArray(records, 20) });
+    if (this.props != nextProps && nextProps.deathsRecords.length > 0) {
+      const records = processRecord(nextProps.deathsRecords);
+      this.setState({ deathsRecords: createGroupedArray(records, 20) });
     }
   }
 
   componentDidMount() {
-    this.props.actions.testFetchKillsRecord();
+    this.props.actions.testFetchDeathsRecord();
   }
 
   onPage(index) {
@@ -85,8 +84,8 @@ class KillsRecord extends Component {
   }
 
   renderFooter() {
-    const { currentPageIndex, killsRecords } = this.state;
-    const totalPages = killsRecords.length;
+    const { currentPageIndex, deathsRecords } = this.state;
+    const totalPages = deathsRecords.length;
 
     return (
       <Pagination
@@ -101,23 +100,21 @@ class KillsRecord extends Component {
   renderHeader() {
     const styles = this.props.style;
 
-    return (
-      <Header headers={["RANK","KILLS","ID", ""]}/>
-    );
+    return <Header headers={["RANK", "DEATHS", "ID", ""]} />;
   }
 
   render() {
-    const { isLoadingKillsRecord } = this.props;
-    const { killsRecords, currentPageIndex } = this.state;
+    const { isLoadingDeathsRecord } = this.props;
+    const { deathsRecords, currentPageIndex } = this.state;
     const styles = this.props.style;
     let content = <View />;
 
-    if (isLoadingKillsRecord) {
+    if (isLoadingDeathsRecord) {
       content = <Loading />;
-    } else if (killsRecords.length > 0) {
+    } else if (deathsRecords.length > 0) {
       content = (
         <FlatList
-          data={killsRecords[currentPageIndex]}
+          data={deathsRecords[currentPageIndex]}
           renderItem={this.renderItem}
           getItemLayout={this.getItemLayout}
           //refreshing={this.state.refreshing}
@@ -138,9 +135,9 @@ class KillsRecord extends Component {
   }
 }
 
-KillsRecord.navigationOptions = {
-  title: "Kills Records",
-  tabBarLabel: "K"
+DeathsRecord.navigationOptions = {
+  title: "Deaths Records",
+  tabBarLabel: "D"
 };
 
 const styles = {
@@ -149,23 +146,23 @@ const styles = {
     paddingTop: 10,
     paddingLeft: 15,
     paddingRight: 15
-  }, 
+  }
 };
 
 function mapStateToProps(state) {
   return {
-    isLoadingKillsRecord: state.killsRecordsState.isLoadingKillsRecord,
-    isEmptyKillsRecord: state.killsRecordsState.isEmptyKillsRecord,
-    killsRecords: state.killsRecordsState.killsRecords
+    isLoadingDeathsRecord: state.deathsRecordState.isLoadingDeathsRecord,
+    isEmptyDeathsRecord: state.deathsRecordState.isEmptyDeathsRecord,
+    deathsRecords: state.deathsRecordState.deathsRecords
   };
 }
 
 function mapDispatchToprops(dispatch) {
   return {
-    actions: bindActionCreators({ testFetchKillsRecord }, dispatch)
+    actions: bindActionCreators({ testFetchDeathsRecord }, dispatch)
   };
 }
 
-export default connectStyle("dota2app.KillsRecord", styles)(
-  connect(mapStateToProps, mapDispatchToprops)(KillsRecord)
+export default connectStyle("dota2app.DeathsRecord", styles)(
+  connect(mapStateToProps, mapDispatchToprops)(DeathsRecord)
 );
