@@ -12,7 +12,7 @@ import SearchForMatch from "../containers/SearchForMatch";
 import PlayerSearch from "../containers/PlayerSearch";
 import HeroStatNavigator from "../navigators/HeroStatNavigator";
 import HeroDetailsNavigator from "../navigators/HeroDetailsNavigator";
-
+import RecordsNavigator from "../navigators/RecordsNavigator";
 
 const RootStack = StackNavigator(
   {
@@ -34,6 +34,9 @@ const RootStack = StackNavigator(
     [screenTypes.HeroDetails]: {
       screen: HeroDetailsNavigator
     },
+    [screenTypes.Records]: {
+      screen: RecordsNavigator,
+    }
   },
   Object.assign({}, stackConfig, {
     initialRouteName: screenTypes.Home,

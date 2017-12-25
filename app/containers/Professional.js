@@ -32,8 +32,7 @@ class Professional extends Component {
     this.keyExtractor = this.keyExtractor.bind(this);
   }
 
-  componentDidMount() {
-    console.log("componentDidMount pro");
+  componentDidMount() {    
     this.fetchProMatches();
   }
 

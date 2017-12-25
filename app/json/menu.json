@@ -18,5 +18,9 @@
   {
     "routeName": "HeroStats",
     "name": "Heroes"
+  },
+  {
+    "routeName": "Records",
+    "name": "Records"
   }
 ]

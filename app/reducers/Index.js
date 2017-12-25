@@ -8,6 +8,7 @@ import playerResultsState from "./PlayerSearchReducer";
 import heroStatsState from "./HeroStatReducer";
 import heroRankingState from "./HeroRankingReducer";
 import heroOverviewState from "./HeroOverviewReducer";
+import durationRecordsState from "./DurationRecordReducer";
 
 const rootReducer = combineReducers({
   nav,
@@ -18,7 +19,8 @@ const rootReducer = combineReducers({
   playerResultsState,
   heroStatsState,
   heroRankingState,
-  heroOverviewState
+  heroOverviewState,
+  durationRecordsState,
 });
 
 export default rootReducer;

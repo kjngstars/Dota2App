@@ -26,4 +26,6 @@ export default {
   HeroDetails: "HeroDetails",
   HeroOverview: "HeroOverview",
   HeroRanking: "HeroRanking",
+  Records: "Records",
+  DurationRecord: "DurationRecord",
 };

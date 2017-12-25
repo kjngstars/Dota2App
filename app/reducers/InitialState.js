@@ -43,5 +43,59 @@ export default {
     isEmptyHeroRanking: false,
     heroRanking: []
   },
-  
+  durationRecord: {
+    isLoadingDurationRecord: false,
+    isEmptyDurationRecord: false,
+    durationRecords: []
+  },
+  killsRecord: {
+    isLoadingKillsRecord: false,
+    isEmptyKillsRecord: false,
+    killsRecords: []
+  },
+  deathsRecord: {
+    isLoadingDeathsRecord: false,
+    isEmptyDeathsRecord: false,
+    deathsRecords: []
+  },
+  assistsRecord: {
+    isLoadingAssistsRecord: false,
+    isEmptyAssistsRecord: false,
+    assistsRecords: []
+  },
+  gpmRecord: {
+    isLoadingGPMRecord: false,
+    isEmptyGPMRecord: false,
+    gpmRecords: []
+  },
+  xpmRecord: {
+    isLoadingXPMRecord: false,
+    isEmptyXPMRecord: false,
+    xpmRecords: []
+  },
+  lhRecord: {
+    isLoadingLHRecord: false,
+    isEmptyLHRecord: false,
+    lhRecords: []
+  },
+  dnRecord: {
+    isLoadingDNRecord: false,
+    isEmptyDNRecord: false,
+    dnRecords: []
+  },
+  hdRecord: {
+    isLoadingHDRecord: false,
+    isEmptyHDRecord: false,
+    hdRecords: []
+  },
+  tdRecord: {
+    isLoadingTDRecord: false,
+    isEmptyTDRecord: false,
+    tdRecords: []
+  },
+  hhRecord: {
+    isLoadingHHRecord: false,
+    isEmptyHHRecord: false,
+    hhRecords: []
+  },
 };
