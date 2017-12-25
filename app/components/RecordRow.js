@@ -4,6 +4,9 @@ import themeColors from "../themes/colors";
 import { connectStyle } from "@shoutem/theme";
 import { dimensionRelativeToIphone } from "@shoutem/ui/theme";
 import Line from "../components/Line";
+import heroes from "dotaconstants/build/heroes.json";
+import Ripple from "react-native-material-ripple";
+import { reduceText } from "../utils/utilsFunction";
 
 const DRTI = dimensionRelativeToIphone;
 
@@ -18,22 +21,31 @@ const RecordRow = ({ style, index, record }) => {
   return (
     <View styleName={style_name} style={style.container}>
       <View style={{ flex: 1 }} styleName="horizontal h-start v-center">
-        <Text style={{color: themeColors.white}}>{record.rank}</Text>
+        <Text style={{ color: themeColors.white }}>{record.rank}</Text>
       </View>
       <View style={{ flex: 1 }} styleName="horizontal h-start v-center">
-        <Text style={{color: themeColors.white}}>{record.score}</Text>
+        <Text style={{ color: themeColors.white }}>{record.score}</Text>
       </View>
       <View style={{ flex: 1 }} styleName="vertical h-start v-center">
-        <View styleName="horizontal h-start v-center">
-          <Text style={{color:themeColors.action, fontSize: 13, marginRight: 3}}>{record.matchId}</Text>
-          <Icon name="right-arrow" style={{color: themeColors.action, fontSize: 13}}/>
-        </View>
+        <Ripple>
+          <View styleName="horizontal h-start v-center">
+            <Text style={{ color: themeColors.action, fontSize: 12 }}>
+              {record.matchId}
+            </Text>
+            <Icon
+              name="right-arrow"
+              style={{ color: themeColors.action, fontSize: 12 }}
+            />
+          </View>
+        </Ripple>
         <Caption>{record.endedTime}</Caption>
       </View>
       {record.heroImg && (
         <View style={{ flex: 1 }} styleName="vertical v-center h-start">
-          <Image source={record.heroImg} style={style.heroAvatar}/>
-          <Text style={{color: themeColors.white, fontSize: 12}}>{record.heroName}</Text>
+          <Image source={record.heroImg} style={style.heroAvatar} />
+          <Text style={{ color: themeColors.white, fontSize: 12 }}>
+            {reduceText(heroes[record.heroId].localized_name, 10)}
+          </Text>
         </View>
       )}
     </View>
@@ -41,7 +53,7 @@ const RecordRow = ({ style, index, record }) => {
 };
 
 const styles = {
-  container: {   
+  container: {
     ".odd": {
       backgroundColor: themeColors.backgroundTableOdd
     },

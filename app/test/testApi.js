@@ -107,3 +107,11 @@ export function getKillsRecord(){
     }, delay);
   });
 }
+
+export function getAssistsRecord(){
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {     
+      resolve(record_kills);
+    }, delay);
+  });
+}

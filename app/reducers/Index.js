@@ -9,6 +9,7 @@ import heroStatsState from "./HeroStatReducer";
 import heroRankingState from "./HeroRankingReducer";
 import heroOverviewState from "./HeroOverviewReducer";
 import durationRecordsState from "./DurationRecordReducer";
+import killsRecordsState from "./KillsRecordReducer";
 
 const rootReducer = combineReducers({
   nav,
@@ -21,6 +22,7 @@ const rootReducer = combineReducers({
   heroRankingState,
   heroOverviewState,
   durationRecordsState,
+  killsRecordsState,
 });
 
 export default rootReducer;

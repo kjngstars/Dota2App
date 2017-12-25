@@ -28,4 +28,5 @@ export default {
   HeroRanking: "HeroRanking",
   Records: "Records",
   DurationRecord: "DurationRecord",
+  KillsRecord: "KillsRecord",
 };
