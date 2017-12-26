@@ -5,7 +5,7 @@ import RightHeader from "../components/RightHeader";
 
 
 const headerTitleStyle = {
-  alignSelf: "center", 
+  //alignSelf: "center", 
   color: "#fff",
 }
 

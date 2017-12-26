@@ -71,3 +71,10 @@ export function reduceText(text, maxLength) {
     return text;
   }
 }
+
+
+export function getSideImage(side) {
+  let sideImage = (sideImage = require("../assets/radiant.png"));
+  if (side == "dire") sideImage = require("../assets/dire.png");
+  return sideImage;
+}

@@ -9,24 +9,32 @@ import {
   Row,
   Subtitle,
   Icon,
-  Title
+  Title,
+  Heading
 } from "@shoutem/ui";
 import PlayerStatsRow, { Item, Stat } from "../components/PlayerStatsRow";
-import { connectStyle } from "@shoutem/theme";
-import ScreenTypes from "../navigators/ScreenTypes";
+import Line from "../components/Line";
+import Header from "../components/Header";
+
 import { getHeroImage } from "../utils/getHeroImage";
 import { getItemImage } from "../utils/getItemImage";
+import { getSideImage } from "../utils/utilsFunction";
 import { kFormatter } from "../utils/kFormatter";
+
 import regionsArray from "../json/regions_list.json";
 import gameMode from "dotaconstants/build/game_mode.json";
 import items from "dotaconstants/build/item_ids.json";
-import moment from "moment";
+import playerColors from "dotaconstants/build/player_colors.json";
+
+import ScreenTypes from "../navigators/ScreenTypes";
 import themeColors from "../themes/colors";
-import { Heading } from "@shoutem/ui/components/Text";
-import Line from "../components/Line";
-import { StockLine } from "react-native-pathjs-charts";
+
 import { connect } from "react-redux";
+import { StockLine } from "react-native-pathjs-charts";
+import { connectStyle } from "@shoutem/theme";
 import { bindActionCreators } from "redux";
+import moment from "moment";
+
 import * as matchDetailsAction from "../actions/MatchDetailsAction";
 
 // components
@@ -39,14 +47,8 @@ const RecapStat = ({ stat, value }) => (
   </View>
 );
 
-function getRadiantDireImage(side) {
-  let sideImage = (sideImage = require("../assets/radiant.png"));
-  if (side == "dire") sideImage = require("../assets/dire.png");
-  return sideImage;
-}
-
 const SideOverview = ({ side, title }) => {
-  const sideImage = getRadiantDireImage(side);
+  const sideImage = getSideImage(side);
 
   return (
     <View styleName="horizontal v-center">
@@ -67,12 +69,16 @@ const MatchRecap = ({ matchRecap }) => {
   if (matchRecap.radiantWin) {
     sideVictoryImage = require("../assets/radiant.png");
     heading = (
-      <Heading style={{ color: themeColors.radiant, fontWeight: 'bold' }}>RADIANT VICTORY</Heading>
+      <Heading style={{ color: themeColors.radiant, fontWeight: "bold" }}>
+        RADIANT VICTORY
+      </Heading>
     );
-  }  
+  }
 
   return (
-    <View style={{backgroundColor: 'rgba(255,255,255,0.109)', marginBottom: 10}}>
+    <View
+      style={{ backgroundColor: "rgba(255,255,255,0.109)", marginBottom: 10 }}
+    >
       <View styleName="horizontal h-center v-center">
         <Image source={sideVictoryImage} styleName="side-avatar" />
         {heading}
@@ -81,7 +87,10 @@ const MatchRecap = ({ matchRecap }) => {
         styleName="horizontal space-between"
         style={{ alignItems: "center" }}
       >
-        <Text style={{ color: themeColors.radiant, fontSize: 40 }} styleName="md-gutter-left">
+        <Text
+          style={{ color: themeColors.radiant, fontSize: 40 }}
+          styleName="md-gutter-left"
+        >
           {matchRecap.radiantKills}
         </Text>
         <View styleName="vertical">
@@ -94,7 +103,10 @@ const MatchRecap = ({ matchRecap }) => {
           </Text>
           <Text styleName="h-center">ENDED {matchRecap.endedTime} AGO</Text>
         </View>
-        <Text style={{ color: themeColors.dire, fontSize: 40 }} styleName="md-gutter-right">
+        <Text
+          style={{ color: themeColors.dire, fontSize: 40 }}
+          styleName="md-gutter-right"
+        >
           {matchRecap.direKills}
         </Text>
       </View>
@@ -104,7 +116,6 @@ const MatchRecap = ({ matchRecap }) => {
         <RecapStat stat="SKILL" value={matchRecap.skill} />
         <RecapStat stat="AVG MMR" value={matchRecap.averageMMR} />
       </View>
-      
     </View>
   );
 };
@@ -115,16 +126,31 @@ class MatchOverview extends Component {
     super(props);
 
     this.state = {
-      sections: []
+      radiantRow: {
+        0: false,
+        1: false,
+        2: false,
+        3: false,
+        4: false
+      },
+      direRow: {
+        0: false,
+        1: false,
+        2: false,
+        3: false,
+        4: false
+      },
+      sections: [],
+      lastRowPressed: '',
     };
 
     this.generateProcessedPlayers = this.generateProcessedPlayers.bind(this);
-    this.generateProcessedData = this.generateProcessedData.bind(this);
     this.getRegionIndex = this.getRegionIndex.bind(this);
     this.getItemName = this.getItemName.bind(this);
     this.findItemTiming = this.findItemTiming.bind(this);
     this.calculateAverageMMR = this.calculateAverageMMR.bind(this);
-    // this.onRowPressed = this.onRowPressed.bind(this);
+    this.onRadiantRowPressed = this.onRadiantRowPressed.bind(this);
+    this.onDireRowPressed = this.onDireRowPressed.bind(this);
     // this.onNamePressed = this.onNamePressed.bind(this);
     this.normalizeGameMode = this.normalizeGameMode.bind(this);
     //this.sortPlayers = this.sortPlayers.bind(this);
@@ -142,82 +168,21 @@ class MatchOverview extends Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.matchDetails && nextProps.matchDetails.players.length > 0) {
       var sections = this.processRawData(nextProps.matchDetails);
-      //console.log(sections);
       this.setState(sections);
     }
   }
 
-  generateProcessedData(data) {
-    var duration = moment("1900-01-01 00:00:00")
-      .add(data.duration, "seconds")
-      .format("HH:mm:ss");
-    this.setState({ formattedDuration: duration });
-    this.setState({ radiantScore: data.radiant_score });
-    this.setState({ direScore: data.dire_score });
-    this.setState({ radiantWin: data.radiant_win });
+  onRadiantRowPressed(index) {
+    const { radiantRow } = this.state;
+    radiantRow[index] = !radiantRow[index];
+    this.setState({ radiantRow, lastRowPressed: "radiant"+ index + radiantRow[index]});
+  } 
 
-    if (data.duration && data.start_time) {
-      var endedTime = (data.start_time + data.duration) * 1000;
-      var now = moment();
-      friendlyEndedTime = moment.duration(now.diff(endedTime)).humanize();
-      this.setState({ endedTime: friendlyEndedTime.toUpperCase() });
-    }
-    if (data.game_mode) {
-      var localizedName = this.normalizeGameMode(gameMode[data.game_mode].name);
-      this.setState({ gameMode: localizedName });
-    }
-    if (data.match_id) {
-      this.setState({ matchId: data.match_id });
-    }
-
-    if (data.region) {
-      var index = this.getRegionIndex(data.region, regionsArray);
-      this.setState({ region: regionsArray[index].localized_name });
-    }
-
-    if (data.players) {
-      var players = data.players;
-      this.calculateAverageMMR(players);
-    }
-
-    if (data.skill) {
-      if (data.skill == 1) {
-        this.setState({ skill: "Normal" });
-      } else if (data.skill == 2) {
-        this.setState({ skill: "High" });
-      } else if (data.skill == 3) {
-        this.setState({ skill: "Very High" });
-      }
-    }
-
-    if (data.radiant_gold_adv) {
-      let graphDataArray = [];
-      let graphData = [];
-      for (var point in data.radiant_gold_adv) {
-        if (data.radiant_gold_adv.hasOwnProperty(point)) {
-          var newPoint = {
-            x: parseInt(point),
-            y: data.radiant_gold_adv[point]
-          };
-          graphData.push(newPoint);
-        }
-      }
-      graphDataArray.push(graphData);
-      this.setState({ radiantGoldAdvantage: graphDataArray });
-    }
-
-    if (data.radiant_xp_adv) {
-      let graphDataArray = [];
-      let graphData = [];
-      for (var point in data.radiant_xp_adv) {
-        if (data.radiant_xp_adv.hasOwnProperty(point)) {
-          var newPoint = { x: parseInt(point), y: data.radiant_xp_adv[point] };
-          graphData.push(newPoint);
-        }
-      }
-      graphDataArray.push(graphData);
-      this.setState({ radiantXpAdvantage: graphDataArray });
-    }
+  onDireRowPressed(index) {
+    const { direRow } = this.state;
+    direRow[index] = !direRow[index];
+    this.setState({ direRow });
+    this.setState({ direRow, lastRowPressed: "dire" + index + direRow[index]});
   }
 
   normalizeGameMode(gameMode) {
@@ -286,6 +251,8 @@ class MatchOverview extends Component {
       processedPlayer.totalGold = kFormatter(
         currentUnprocessedPlayer.total_gold
       );
+
+      processedPlayer.color = playerColors[currentUnprocessedPlayer.player_slot];
 
       processedPlayer.backpack_0 = currentUnprocessedPlayer.backpack_0;
       var backpack_0_name = this.getItemName(processedPlayer.backpack_0);
@@ -510,11 +477,10 @@ class MatchOverview extends Component {
         recap.skill = "High";
       } else if (data.skill == 3) {
         recap.skill = "Very High";
-      }      
-    }
-    else{
+      }
+    } else {
       recap.skill = "Unknown";
-    }  
+    }
     //#endregion Match Recap
 
     //#region Radiant Gold Adv
@@ -573,10 +539,14 @@ class MatchOverview extends Component {
       data: [],
       key: "4",
       renderItem: ({ item, index }) => {
-        if (index % 2) {
-          return (<PlayerStatsRow player={item} isOdd/>);
-        }
-        return (<PlayerStatsRow player={item} />);
+        return (
+          <PlayerStatsRow
+            player={item}
+            index={index}
+            showDetails={this.state.radiantRow[index]}
+            onPress={() => this.onRadiantRowPressed(index)}
+          />
+        );
       }
     };
 
@@ -584,10 +554,14 @@ class MatchOverview extends Component {
       data: [],
       key: "5",
       renderItem: ({ item, index }) => {
-        if (index % 2) {
-          return (<PlayerStatsRow player={item} isOdd/>);
-        }
-        return (<PlayerStatsRow player={item} />);
+        return (
+          <PlayerStatsRow
+            player={item}
+            index={index}
+            showDetails={this.state.direRow[index]}
+            onPress={() => this.onDireRowPressed(index)}
+          />
+        );
       }
     };
 
@@ -611,7 +585,7 @@ class MatchOverview extends Component {
     }
     recap.radiantKills = radiantKills;
     recap.direKills = direKills;
-    
+
     matchRecap.data.push(recap);
 
     return [matchRecap, radiantPlayers, direPlayers];
@@ -810,37 +784,65 @@ class MatchOverview extends Component {
     return xpGraph;
   }
 
-  renderSectionHeader({section}){
-    if(section.key==1){
-      return <View />
-    }
-    else if(section.key==2){
-      return <View/> 
-    }
-    else if(section.key==3){
-      return <View/> 
-    }
-    else if(section.key==4){
+  renderSectionHeader({ section }) {
+    if (section.key == 1) {
+      return <View />;
+    } else if (section.key == 2) {
+      return <View />;
+    } else if (section.key == 3) {
+      return <View />;
+    } else if (section.key == 4) {
       return (
         <View styleName="vertical">
-        <View styleName="horizontal h-start">
-          <Image source={require('../assets/radiant.png')} styleName="extra-small"/>
-          <Title styleName="sm-gutter-left" style={{color:themeColors.radiant}}>Radiant - Overview</Title>
+          <View styleName="horizontal h-start">
+            <Image
+              source={require("../assets/radiant.png")}
+              styleName="extra-small"
+            />
+            <Title
+              styleName="sm-gutter-left"
+              style={{ color: themeColors.radiant }}
+            >
+              RADIANT
+            </Title>
+          </View>
+          <Line color={themeColors.radiant} />
+          <Header
+            headers={["Hero", "Player", "K/D/A", "GPM", "XPM"]}
+            contentStyle={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center"
+            }}
+          />
         </View>
-        <Line color={themeColors.greyBorder}/>
-        </View>
-      ) 
-    }
-    else if(section.key==5){
+      );
+    } else if (section.key == 5) {
       return (
         <View styleName="vertical">
-        <View styleName="horizontal h-start">
-          <Image source={require('../assets/dire.png')} styleName="extra-small"/>
-          <Title styleName="sm-gutter-left" style={{color:themeColors.dire}}>Dire - Overview</Title>
+          <View styleName="horizontal h-start">
+            <Image
+              source={require("../assets/dire.png")}
+              styleName="extra-small"
+            />
+            <Title
+              styleName="sm-gutter-left"
+              style={{ color: themeColors.dire }}
+            >
+              DIRE
+            </Title>
+          </View>
+          <Line color={themeColors.dire} />
+          <Header
+            headers={["Hero", "Player", "K/D/A", "GPM", "XPM"]}
+            contentStyle={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center"
+            }}
+          />
         </View>
-        <Line color={themeColors.greyBorder}/>
-        </View>
-      )
+      );
     }
   }
 
@@ -864,21 +866,21 @@ class MatchOverview extends Component {
 
     return (
       <View styleName="fill-parent dota2">
-        <NavigationBarWithMatchSearch
-          navigation={navigation}
-          title="Overview"
-        />
         <SectionList
           style={styles.sectionListContainer}
           sections={this.state.sections}
-          renderSectionHeader = {this.renderSectionHeader}
+          renderSectionHeader={this.renderSectionHeader}
+          extraData = {this.state.lastRowPressed}
         />
       </View>
     );
   }
 }
 
-MatchOverview.navigationOptions = {};
+MatchOverview.navigationOptions = {
+  title: "Match Details",
+  tabBarLabel: "Overview"
+};
 
 const styles = {
   container: {
@@ -933,7 +935,7 @@ const styles = {
     marginTop: 10,
     marginBottom: 10,
     marginLeft: 15,
-    marginRight: 15,    
+    marginRight: 15
   },
   statRow: {
     flex: 1,
