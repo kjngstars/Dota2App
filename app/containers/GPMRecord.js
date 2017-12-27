@@ -100,7 +100,16 @@ class GPMRecord extends Component {
   renderHeader() {
     const styles = this.props.style;
 
-    return <Header headers={["RANK", "GPM", "ID", ""]} />;
+    return (
+      <Header
+        headers={[
+          { title: "RANK" },
+          { title: "GPM" },
+          { title: "ID" },
+          { title: "" }
+        ]}
+      />
+    );
   }
 
   render() {

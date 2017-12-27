@@ -100,7 +100,7 @@ class AssistsRecord extends Component {
   renderHeader() {
     const styles = this.props.style;
 
-    return <Header headers={["RANK", "ASSISTS", "ID", ""]} />;
+    return <Header headers={[{title:"RANK"}, {title:"ASSISTS"}, {title:"ID"}, {title: ""}]} />;
   }
 
   render() {

@@ -24,7 +24,6 @@ import { getGetOrdinal } from "../utils/utilsFunction";
 import { testFetchKillsRecord } from "../actions/KillsRecordAction";
 import { RECORD_ROW_HEIGHT } from "../components/RecordRow";
 
-
 import moment from "moment";
 
 class KillsRecord extends Component {
@@ -102,7 +101,14 @@ class KillsRecord extends Component {
     const styles = this.props.style;
 
     return (
-      <Header headers={["RANK","KILLS","ID", ""]}/>
+      <Header
+        headers={[
+          { title: "RANK" },
+          { title: "KILLS" },
+          { title: "ID" },
+          { title: "" }
+        ]}
+      />
     );
   }
 
@@ -149,7 +155,7 @@ const styles = {
     paddingTop: 10,
     paddingLeft: 15,
     paddingRight: 15
-  }, 
+  }
 };
 
 function mapStateToProps(state) {

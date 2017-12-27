@@ -100,7 +100,16 @@ class DeathsRecord extends Component {
   renderHeader() {
     const styles = this.props.style;
 
-    return <Header headers={["RANK", "DEATHS", "ID", ""]} />;
+    return (
+      <Header
+        headers={[
+          { title: "RANK" },
+          { title: "DEATHS" },
+          { title: "ID" },
+          { title: "" }
+        ]}
+      />
+    );
   }
 
   render() {

@@ -100,7 +100,16 @@ class XPMRecord extends Component {
   renderHeader() {
     const styles = this.props.style;
 
-    return <Header headers={["RANK", "XPM", "ID", ""]} />;
+    return (
+      <Header
+        headers={[
+          { title: "RANK" },
+          { title: "XPM" },
+          { title: "ID" },
+          { title: "" }
+        ]}
+      />
+    );
   }
 
   render() {

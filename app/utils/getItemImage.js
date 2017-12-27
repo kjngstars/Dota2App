@@ -381,7 +381,7 @@ export function getItemImage(id) {
     } else if (id == 1020) {
         staticImage = require('../assets/items/winter_greevil_chewy_lg.png');
     } else {
-        staticImage = require('../assets/no-item.png');
+        staticImage = require('../assets/empty_item_slot.png');
     }
     return staticImage;
 }

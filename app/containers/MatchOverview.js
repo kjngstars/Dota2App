@@ -77,7 +77,14 @@ const MatchRecap = ({ matchRecap }) => {
 
   return (
     <View
-      style={{ backgroundColor: "rgba(255,255,255,0.109)", marginBottom: 10 }}
+      style={{
+        backgroundColor: "rgba(0,0,0,0.2)",
+        padding: 10,
+        marginBottom: 10,
+        borderRadius: 3,
+        borderWidth: 1,
+        borderColor: "rgba(0,0,0,0.2)"
+      }}
     >
       <View styleName="horizontal h-center v-center">
         <Image source={sideVictoryImage} styleName="side-avatar" />
@@ -141,7 +148,7 @@ class MatchOverview extends Component {
         4: false
       },
       sections: [],
-      lastRowPressed: '',
+      lastRowPressed: ""
     };
 
     this.generateProcessedPlayers = this.generateProcessedPlayers.bind(this);
@@ -175,14 +182,17 @@ class MatchOverview extends Component {
   onRadiantRowPressed(index) {
     const { radiantRow } = this.state;
     radiantRow[index] = !radiantRow[index];
-    this.setState({ radiantRow, lastRowPressed: "radiant"+ index + radiantRow[index]});
-  } 
+    this.setState({
+      radiantRow,
+      lastRowPressed: "radiant" + index + radiantRow[index]
+    });
+  }
 
   onDireRowPressed(index) {
     const { direRow } = this.state;
     direRow[index] = !direRow[index];
     this.setState({ direRow });
-    this.setState({ direRow, lastRowPressed: "dire" + index + direRow[index]});
+    this.setState({ direRow, lastRowPressed: "dire" + index + direRow[index] });
   }
 
   normalizeGameMode(gameMode) {
@@ -252,7 +262,8 @@ class MatchOverview extends Component {
         currentUnprocessedPlayer.total_gold
       );
 
-      processedPlayer.color = playerColors[currentUnprocessedPlayer.player_slot];
+      processedPlayer.color =
+        playerColors[currentUnprocessedPlayer.player_slot];
 
       processedPlayer.backpack_0 = currentUnprocessedPlayer.backpack_0;
       var backpack_0_name = this.getItemName(processedPlayer.backpack_0);
@@ -487,10 +498,13 @@ class MatchOverview extends Component {
     let radiantGoldAdv = {
       data: [],
       key: "2",
-      renderItem: ""
+      renderItem: ({ item }) => {
+        return this.renderGoldGraph(item);
+      }
     };
 
     let radiantGoldData = {};
+    radiantGoldData.key = "radiant_gold_data";
 
     if (data.radiant_gold_adv) {
       let graphDataArray = [];
@@ -514,10 +528,13 @@ class MatchOverview extends Component {
     let radiantXPAdv = {
       data: [],
       key: "3",
-      renderItem: ""
+      renderItem: ({ item }) => {
+        return this.renderXPGraph(item);
+      }
     };
 
     let radiantXPData = {};
+    radiantXPData.key = "radiant_xp_data";
 
     if (data.radiant_xp_adv) {
       let graphDataArray = [];
@@ -588,12 +605,22 @@ class MatchOverview extends Component {
 
     matchRecap.data.push(recap);
 
-    return [matchRecap, radiantPlayers, direPlayers];
+    let result = [matchRecap, radiantPlayers, direPlayers];
+
+    if (data.radiant_gold_adv) {
+      result.push(radiantGoldAdv);
+    }
+
+    if (data.radiant_xp_adv) {
+      result.push(radiantXPAdv);
+    }
+
+    return result;
   }
 
   renderGoldGraph(item) {
     let goldGraph = <View />;
-    if (item.radiantXpAdvantage) {
+    if (item.radiantGoldAdvantage) {
       let options = {
         width: item.radiantGoldAdvantage[0].length * 10,
         height: 380,
@@ -601,7 +628,7 @@ class MatchOverview extends Component {
         margin: {
           top: 18,
           left: 50,
-          bottom: 18,
+          bottom: 40,
           right: 20
         },
         animate: {
@@ -616,12 +643,12 @@ class MatchOverview extends Component {
           zeroAxis: true,
           orient: "bottom",
           tickValues: [],
-          gridColor: this.props.secondLegend,
+          gridColor: themeColors.greyBorder,
           hideGrid: true,
           label: {
-            fontFamily: "Arial",
-            fontSize: 14,
-            fill: this.props.secondLegend
+            //fontFamily: "Arial",
+            fontSize: 13,
+            fill: themeColors.white
           }
         },
         axisY: {
@@ -631,7 +658,7 @@ class MatchOverview extends Component {
           showTicks: true,
           zeroAxis: true,
           orient: "left",
-          gridColor: this.props.secondLegend,
+          gridColor: themeColors.greyBorder,
           tickValues: [
             { value: -35000 },
             { value: -30000 },
@@ -652,23 +679,12 @@ class MatchOverview extends Component {
           label: {
             fontFamily: "Arial",
             fontSize: 14,
-            fill: this.props.secondLegend
+            fill: themeColors.white
           }
         }
       };
       goldGraph = (
-        <View>
-          <View
-            style={{
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: 10,
-              marginHorizontal: 10
-            }}
-          >
-            <Text>Radiant Gold Advantage</Text>
-          </View>
-          <View />
+        <View style={{ backgroundColor: themeColors.backgroundTableEven }}>
           <ScrollView horizontal showsHorizontalScrollIndicator={true}>
             <View style={{ flexDirection: "row" }}>
               <StockLine
@@ -690,13 +706,13 @@ class MatchOverview extends Component {
     let xpGraph = <View />;
     if (item.radiantXpAdvantage) {
       let options = {
-        width: this.state.radiantXpAdvantage[0].length * 10,
+        width: item.radiantXpAdvantage[0].length * 10,
         height: 380,
         color: "#2576b0",
         margin: {
           top: 18,
           left: 50,
-          bottom: 18,
+          bottom: 40,
           right: 20
         },
         animate: {
@@ -711,12 +727,12 @@ class MatchOverview extends Component {
           zeroAxis: true,
           orient: "bottom",
           tickValues: [],
-          gridColor: this.props.secondLegend,
+          gridColor: themeColors.greyBorder,
           hideGrid: true,
           label: {
-            fontFamily: "Arial",
-            fontSize: 14,
-            fill: this.props.secondLegend
+            //fontFamily: "Arial",
+            fontSize: 13,
+            fill: themeColors.white
           }
         },
         axisY: {
@@ -726,7 +742,7 @@ class MatchOverview extends Component {
           showTicks: true,
           zeroAxis: true,
           orient: "left",
-          gridColor: this.props.secondLegend,
+          gridColor: themeColors.greyBorder,
           tickValues: [
             { value: -35000 },
             { value: -30000 },
@@ -746,32 +762,17 @@ class MatchOverview extends Component {
           ],
           label: {
             fontFamily: "Arial",
-            fontSize: 14,
-            fill: this.props.secondLegend
+            fontSize: 13,
+            fill: themeColors.white
           }
         }
       };
       xpGraph = (
-        <View>
-          <View
-            style={{
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: 10,
-              marginHorizontal: 10
-            }}
-          >
-            <Text
-              style={[styles.titleText, { color: this.props.secondLegend }]}
-            >
-              Radiant XP Advantage
-            </Text>
-          </View>
-          <View />
+        <View style={{ backgroundColor: themeColors.backgroundTableEven }}>                   
           <ScrollView horizontal showsHorizontalScrollIndicator={true}>
             <View style={{ flexDirection: "row" }}>
               <StockLine
-                data={this.state.radiantXpAdvantage}
+                data={item.radiantXpAdvantage}
                 options={options}
                 xKey="x"
                 yKey="y"
@@ -788,9 +789,47 @@ class MatchOverview extends Component {
     if (section.key == 1) {
       return <View />;
     } else if (section.key == 2) {
-      return <View />;
+      return (
+        <View styleName="vertical">
+          <View
+            styleName="horizontal h-start v-end"
+            style={{ marginTop: 10, marginBottom: 5 }}
+          >
+            <Image
+              source={require("../assets/stats_bar.png")}
+              styleName="extra-small"
+            />
+            <Title
+              styleName="sm-gutter-left"
+              style={{ color: themeColors.white }}
+            >
+              Radiant Gold Advantage
+            </Title>
+          </View>
+          <Line />
+        </View>
+      );
     } else if (section.key == 3) {
-      return <View />;
+      return (
+        <View styleName="vertical">
+          <View
+            styleName="horizontal h-start v-end"
+            style={{ marginTop: 10, marginBottom: 5 }}
+          >
+            <Image
+              source={require("../assets/stats_bar.png")}
+              styleName="extra-small"
+            />
+            <Title
+              styleName="sm-gutter-left"
+              style={{ color: themeColors.white }}
+            >
+              Radiant XP Advantage
+            </Title>
+          </View>
+          <Line />
+        </View>
+      );
     } else if (section.key == 4) {
       return (
         <View styleName="vertical">
@@ -808,7 +847,13 @@ class MatchOverview extends Component {
           </View>
           <Line color={themeColors.radiant} />
           <Header
-            headers={["Hero", "Player", "K/D/A", "GPM", "XPM"]}
+            headers={[
+              { title: "Hero" },
+              { title: "Player" },
+              { title: "K/D/A" },
+              { title: "GPM" },
+              { title: "XPM" }
+            ]}
             contentStyle={{
               flex: 1,
               justifyContent: "center",
@@ -834,7 +879,13 @@ class MatchOverview extends Component {
           </View>
           <Line color={themeColors.dire} />
           <Header
-            headers={["Hero", "Player", "K/D/A", "GPM", "XPM"]}
+            headers={[
+              { title: "Hero" },
+              { title: "Player" },
+              { title: "K/D/A" },
+              { title: "GPM" },
+              { title: "XPM" }
+            ]}
             contentStyle={{
               flex: 1,
               justifyContent: "center",
@@ -870,7 +921,7 @@ class MatchOverview extends Component {
           style={styles.sectionListContainer}
           sections={this.state.sections}
           renderSectionHeader={this.renderSectionHeader}
-          extraData = {this.state.lastRowPressed}
+          extraData={this.state.lastRowPressed}
         />
       </View>
     );
