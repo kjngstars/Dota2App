@@ -9,6 +9,7 @@ import {
   Overlay,
   Subtitle
 } from "@shoutem/ui";
+
 import * as navigationAction from "../actions/NavigationAction";
 import { connectStyle } from "@shoutem/theme";
 import { NavigationBarWithMatchSearch } from "../components/NavigationBar";
@@ -23,7 +24,8 @@ class Start extends Component {
     super(props);
 
     this.state = {
-      index: this.props.index
+      index: this.props.index,
+      isPopoverVisible: false
     };
 
     this.navigateToMatchScreen = this.navigateToMatchScreen.bind(this);
@@ -46,18 +48,14 @@ class Start extends Component {
   render() {
     const styles = this.props.style;
     const { navigation } = this.props;
-    return (
-      <View styleName="fill-parent dota2" style={styles.container}>
-        
-      </View>
-    );
+    return <View styleName="fill-parent dota2" style={styles.container} />;
   }
 }
 
 Start.navigationOptions = ({ navigation }) => {
-  const { params = {} } = navigation.state;  
+  const { params = {} } = navigation.state;
   return {
-    title: "Home",
+    title: "Home"
     //headerLeft:
     //  params.stackCounts > 2 ? <LeftHeader navigation={navigation} /> : null
   };
@@ -68,7 +66,9 @@ const styles = {
     paddingTop: 10,
     paddingBottom: 10,
     paddingLeft: 15,
-    paddingRight: 15
+    paddingRight: 15,
+    flexDirection: "column",
+    justifyContent: "flex-end"
   }
 };
 

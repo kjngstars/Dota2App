@@ -21,6 +21,8 @@ import { reduceText } from "../utils/utilsFunction";
 import { dimensionRelativeToIphone } from "@shoutem/ui/theme";
 const DRTI = dimensionRelativeToIphone;
 
+export const PLAYER_STAT_ROW_HEIGHT = 50;
+
 export const Item = ({ style, imgUrl, time = "" }) => {
   let TimePurchase = <View />;
   if (time != "")
@@ -47,153 +49,179 @@ const PlayerStatsRow = ({ style, player, index, showDetails, onPress }) => {
   const kda = player.kills + "/" + player.deaths + "/" + player.assists;
   const backpackImage = require("../assets/backpack.png");
 
-  return (
-    <View
-      styleName={_styleName}
-      style={Object.assign({}, style.container, {
-        borderLeftWidth: 2,
-        borderColor: player.color
-      })}
-    >
-      <Ripple onPress={onPress}>
-        <View styleName="horizontal h-start v-center" style={style.mainContent}>
-          <View style={style.statContainer}>
-            <Image source={heroAvatar} style={style.heroImg} />
-            <Text style={style.level} styleName="bold">
-              {player.level}
-            </Text>
+  let content = <View />;
+
+  if (index == 0) {
+    content = (
+      <Header
+        headers={[
+          { title: "Hero" },
+          { title: "Player" },
+          { title: "K/D/A" },
+          { title: "GPM" },
+          { title: "XPM" }
+        ]}
+        contentStyle={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center"
+        }}
+      />
+    );
+  } else {
+    content = (
+      <View
+        styleName={_styleName}
+        style={Object.assign({}, style.container, {
+          borderLeftWidth: 2,
+          borderColor: player.color
+        })}
+      >
+        <Ripple onPress={onPress}>
+          <View
+            styleName="horizontal h-start v-center"
+            style={style.mainContent}
+          >
+            <View style={style.statContainer}>
+              <Image source={heroAvatar} style={style.heroImg} />
+              <Text style={style.level} styleName="bold">
+                {player.level}
+              </Text>
+            </View>
+            <View style={style.statContainer}>
+              <Text styleName="normal" style={style.stat}>
+                {reduceText(player.player, 8)}
+              </Text>
+            </View>
+            <View style={style.statContainer}>
+              <Text styleName="normal" style={style.stat}>
+                {kda}
+              </Text>
+            </View>
+            <View style={style.statContainer}>
+              <Text styleName="normal" style={style.stat}>
+                {player.gpm}
+              </Text>
+            </View>
+            <View style={style.statContainer}>
+              <Text styleName="normal" style={style.stat}>
+                {player.xpm}
+              </Text>
+            </View>
           </View>
-          <View style={style.statContainer}>
-            <Text styleName="normal" style={style.stat}>
-              {reduceText(player.player, 8)}
-            </Text>
+        </Ripple>
+        {showDetails && (
+          <View style={{ paddingLeft: 14, paddingRight: 14 }}>
+            <Line color={themeColors.action} />
           </View>
-          <View style={style.statContainer}>
-            <Text styleName="normal" style={style.stat}>
-              {kda}
-            </Text>
-          </View>
-          <View style={style.statContainer}>
-            <Text styleName="normal" style={style.stat}>
-              {player.gpm}
-            </Text>
-          </View>
-          <View style={style.statContainer}>
-            <Text styleName="normal" style={style.stat}>
-              {player.xpm}
-            </Text>
-          </View>
-        </View>
-      </Ripple>
-      {showDetails && (
-        <View style={{ paddingLeft: 14, paddingRight: 14 }}>
-          <Line color={themeColors.action} />
-        </View>
-      )}
-      {showDetails && (
-        <View
-          styleName="vertical v-center h-center"
-          style={style.detailsContent}
-        >
-          <View style={style.itemContainer}>
-            <Item
-              style={style}
-              imgUrl={player.item_0_uri}
-              time={player.item_0_timing}
-            />
-            <Item
-              style={style}
-              imgUrl={player.item_1_uri}
-              time={player.item_1_timing}
-            />
-            <Item
-              style={style}
-              imgUrl={player.item_2_uri}
-              time={player.item_2_timing}
-            />
-            <Item
-              style={style}
-              imgUrl={player.item_3_uri}
-              time={player.item_3_timing}
-            />
-            <Item
-              style={style}
-              imgUrl={player.item_4_uri}
-              time={player.item_4_timing}
-            />
-            <Item
-              style={style}
-              imgUrl={player.item_5_uri}
-              time={player.item_5_timing}
-            />
-          </View>
-          <View style={style.itemContainer}>
-            <Item style={style} imgUrl={backpackImage} />
-            <Item
-              style={style}
-              imgUrl={player.backpack_0_uri}
-              time={player.backpack_0_timing}
-            />
-            <Item
-              style={style}
-              imgUrl={player.backpack_1_uri}
-              time={player.backpack_1_timing}
-            />
-            <Item
-              style={style}
-              imgUrl={player.backpack_2_uri}
-              time={player.backpack_2_timing}
-            />
-          </View>
-          <Header
-            headers={[
-              { title: "LH" },
-              { title: "DN" },
-              { title: "HD" },
-              { title: "HH" },
-              { title: "TD" },
-              {
-                title: "G",
-                image: require("../assets/gold.png"),
-                style: {
-                  color: themeColors.gold
+        )}
+        {showDetails && (
+          <View
+            styleName="vertical v-center h-center"
+            style={style.detailsContent}
+          >
+            <View style={style.itemContainer}>
+              <Item
+                style={style}
+                imgUrl={player.item_0_uri}
+                time={player.item_0_timing}
+              />
+              <Item
+                style={style}
+                imgUrl={player.item_1_uri}
+                time={player.item_1_timing}
+              />
+              <Item
+                style={style}
+                imgUrl={player.item_2_uri}
+                time={player.item_2_timing}
+              />
+              <Item
+                style={style}
+                imgUrl={player.item_3_uri}
+                time={player.item_3_timing}
+              />
+              <Item
+                style={style}
+                imgUrl={player.item_4_uri}
+                time={player.item_4_timing}
+              />
+              <Item
+                style={style}
+                imgUrl={player.item_5_uri}
+                time={player.item_5_timing}
+              />
+            </View>
+            <View style={style.itemContainer}>
+              <Item style={style} imgUrl={backpackImage} />
+              <Item
+                style={style}
+                imgUrl={player.backpack_0_uri}
+                time={player.backpack_0_timing}
+              />
+              <Item
+                style={style}
+                imgUrl={player.backpack_1_uri}
+                time={player.backpack_1_timing}
+              />
+              <Item
+                style={style}
+                imgUrl={player.backpack_2_uri}
+                time={player.backpack_2_timing}
+              />
+            </View>
+            <Header
+              headers={[
+                { title: "LH" },
+                { title: "DN" },
+                { title: "HD" },
+                { title: "HH" },
+                { title: "TD" },
+                {
+                  title: "G",
+                  image: require("../assets/gold.png"),
+                  style: {
+                    color: themeColors.gold
+                  }
                 }
-              }
-            ]}
-            fontSize={12}
-            headerStyle={{ height: 25, backgroundColor: "rgba(0,0,0,0.4)" }}
-            contentStyle={{
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center"
-            }}
-          />
-          <Header
-            headers={[
-              { title: player.lastHits },
-              { title: player.denies },
-              { title: player.heroDamage },
-              { title: player.heroHealing },
-              { title: player.towerDamage },
-              {
-                title: player.totalGold,
-                style: {
-                  color: themeColors.gold
+              ]}
+              fontSize={12}
+              headerStyle={{ height: 25, backgroundColor: "rgba(0,0,0,0.4)" }}
+              contentStyle={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center"
+              }}
+            />
+            <Header
+              headers={[
+                { title: player.lastHits },
+                { title: player.denies },
+                { title: player.heroDamage },
+                { title: player.heroHealing },
+                { title: player.towerDamage },
+                {
+                  title: player.totalGold,
+                  style: {
+                    color: themeColors.gold
+                  }
                 }
-              }
-            ]}
-            fontSize={12}
-            headerStyle={{ height: 25, backgroundColor: "rgba(0,0,0,0)" }}
-            contentStyle={{
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center"
-            }}
-          />
-        </View>
-      )}
-    </View>
-  );
+              ]}
+              fontSize={12}
+              headerStyle={{ height: 25, backgroundColor: "rgba(0,0,0,0)" }}
+              contentStyle={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center"
+              }}
+            />
+          </View>
+        )}
+      </View>
+    );
+  }
+
+  return content;
 };
 
 const styles = {
@@ -206,7 +234,7 @@ const styles = {
     }
   },
   mainContent: {
-    height: 50
+    height: PLAYER_STAT_ROW_HEIGHT
   },
   detailsContent: {
     height: 110,

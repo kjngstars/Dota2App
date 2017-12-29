@@ -1,13 +1,14 @@
 import React, { Component } from "react";
 import { View, Image, Text, Icon, Title, Caption } from "@shoutem/ui";
+
 import themeColors from "../themes/colors";
 import { connectStyle } from "@shoutem/theme";
-import { dimensionRelativeToIphone } from "@shoutem/ui/theme";
 import Line from "../components/Line";
 import heroes from "dotaconstants/build/heroes.json";
 import Ripple from "react-native-material-ripple";
 import { reduceText } from "../utils/utilsFunction";
 
+import { dimensionRelativeToIphone } from "@shoutem/ui/theme";
 const DRTI = dimensionRelativeToIphone;
 
 export const RECORD_ROW_HEIGHT = 50;

@@ -12,9 +12,14 @@ import {
   Title,
   Heading
 } from "@shoutem/ui";
-import PlayerStatsRow, { Item, Stat } from "../components/PlayerStatsRow";
+import PlayerStatsRow, {
+  Item,
+  Stat,
+  PLAYER_STAT_ROW_HEIGHT
+} from "../components/PlayerStatsRow";
 import Line from "../components/Line";
 import Header from "../components/Header";
+import SkillBuild, { CELL_SIZE } from "../containers/SkillBuild";
 
 import { getHeroImage } from "../utils/getHeroImage";
 import { getItemImage } from "../utils/getItemImage";
@@ -29,15 +34,53 @@ import playerColors from "dotaconstants/build/player_colors.json";
 import ScreenTypes from "../navigators/ScreenTypes";
 import themeColors from "../themes/colors";
 
-import { connect } from "react-redux";
+import Modal from "react-native-modal";
 import { StockLine } from "react-native-pathjs-charts";
+
+import { connect } from "react-redux";
 import { connectStyle } from "@shoutem/theme";
 import { bindActionCreators } from "redux";
 import moment from "moment";
+import sectionListGetItemLayout from "react-native-section-list-get-item-layout";
 
 import * as matchDetailsAction from "../actions/MatchDetailsAction";
 
 // components
+
+const SideOverviewHeader = ({ side, imgUrl }) => {
+  return (
+    <View styleName="vertical">
+      <View styleName="horizontal h-start">
+        <Image source={imgUrl} styleName="extra-small" />
+        <Title
+          styleName="sm-gutter-left"
+          style={{ color: themeColors.radiant }}
+        >
+          {side}
+        </Title>
+      </View>
+      <Line color={themeColors.radiant} />
+    </View>
+  );
+};
+
+const SectionHeader = ({ imgUrl, title }) => {
+  return (
+    <View styleName="vertical" style={{ height: 50 }}>
+      <View
+        styleName="horizontal h-start v-end"
+        style={{ marginTop: 10, marginBottom: 5 }}
+      >
+        <Image source={imgUrl} styleName="extra-small" />
+        <Title styleName="sm-gutter-left" style={{ color: themeColors.white }}>
+          {title}
+        </Title>
+      </View>
+      <Line />
+    </View>
+  );
+};
+
 const RecapStat = ({ stat, value }) => (
   <View styleName="vertical h-end">
     <Text style={{ color: "#FFFFFF", fontSize: 13 }}>{stat}</Text>
@@ -83,7 +126,10 @@ const MatchRecap = ({ matchRecap }) => {
         marginBottom: 10,
         borderRadius: 3,
         borderWidth: 1,
-        borderColor: "rgba(0,0,0,0.2)"
+        borderColor: "rgba(0,0,0,0.2)",
+        height: 180,
+        flexDirection: "column",
+        justifyContent: "center",        
       }}
     >
       <View styleName="horizontal h-center v-center">
@@ -148,7 +194,8 @@ class MatchOverview extends Component {
         4: false
       },
       sections: [],
-      lastRowPressed: ""
+      lastRowPressed: "",
+      abilityDetailsModal: false
     };
 
     this.generateProcessedPlayers = this.generateProcessedPlayers.bind(this);
@@ -162,6 +209,27 @@ class MatchOverview extends Component {
     this.normalizeGameMode = this.normalizeGameMode.bind(this);
     //this.sortPlayers = this.sortPlayers.bind(this);
     this.renderSectionHeader = this.renderSectionHeader.bind(this);
+    this.toggleAbilityPopup = this.toggleAbilityPopup.bind(this);
+    this.getItemLayout = sectionListGetItemLayout({
+      getItemHeight: (rowData, sectionIndex, rowIndex) => {
+        if (sectionIndex == 0) {
+          return 200;
+        } else if (sectionIndex == 1 || sectionIndex == 2) {
+          if (rowIndex == 0) {
+            return 40;
+          } else {
+            return PLAYER_STAT_ROW_HEIGHT;
+          }
+        } else if (sectionIndex == 3 || sectionIndex == 4) {
+          return 40 + 5 * CELL_SIZE;
+        } else if (sectionIndex == 5 || sectionIndex == 6) {
+          return 380;
+        }
+      },
+
+      // These four properties are optional
+      getSectionHeaderHeight: () => 50 // The height of your section headers
+    });
   }
 
   componentWillMount() {
@@ -412,6 +480,11 @@ class MatchOverview extends Component {
 
       processedPlayer.accountId = currentUnprocessedPlayer.account_id;
       processedPlayer.slot = i;
+
+      //Ability Build
+      processedPlayer.abilityUpgrades =
+        currentUnprocessedPlayer.ability_upgrades_arr;
+
       //use as key for sectionlist item
       processedPlayer.key = currentUnprocessedPlayer.player_slot;
       processedPlayersList[i] = processedPlayer;
@@ -551,7 +624,7 @@ class MatchOverview extends Component {
     }
     //#endregion Radiant XP Adv
 
-    //#region  Radiant Players Overview
+    //#region Radiant Players Overview
     let radiantPlayers = {
       data: [],
       key: "4",
@@ -586,10 +659,12 @@ class MatchOverview extends Component {
     var processedPlayersList = this.generateProcessedPlayers(players);
 
     var radiantPlayersList = processedPlayersList.slice(0, 5);
-    radiantPlayers.data = radiantPlayersList;
+    radiantPlayers.data = radiantPlayersList.slice();
+    radiantPlayers.data.unshift({ key: "radiant_header" });
 
     var direPlayersList = processedPlayersList.slice(5, 10);
-    direPlayers.data = direPlayersList;
+    direPlayers.data = direPlayersList.slice();
+    direPlayers.data.unshift({ key: "dire_header" });
     //#endregion Radiant Players Overview
 
     let radiantKills = 0;
@@ -605,7 +680,61 @@ class MatchOverview extends Component {
 
     matchRecap.data.push(recap);
 
-    let result = [matchRecap, radiantPlayers, direPlayers];
+    //#region Radiant's ability build
+
+    const radiantPlayersObject = radiantPlayersList.reduce((acc, cur, i) => {
+      acc[i] = cur;
+      return acc;
+    }, {});
+
+    let radiantAbilityBuild = {
+      data: [],
+      key: "6",
+      renderItem: ({ item, index }) => {
+        return (
+          <SkillBuild data={item} onAbilityPress={this.toggleAbilityPopup} />
+        );
+      }
+    };
+
+    let radiantAbilityData = {};
+    radiantAbilityData.key = "radiant_ability_build";
+    radiantAbilityData.playersData = radiantPlayersObject;
+    radiantAbilityBuild.data.push(radiantAbilityData);
+
+    //#endregion Radiant's ability build
+
+    //#region Dire's ability build
+
+    const direPlayersObject = direPlayersList.reduce((acc, cur, i) => {
+      acc[i] = cur;
+      return acc;
+    }, {});
+
+    let direAbilityBuild = {
+      data: [],
+      key: "7",
+      renderItem: ({ item, index }) => {
+        return (
+          <SkillBuild data={item} onAbilityPress={this.toggleAbilityPopup} />
+        );
+      }
+    };
+
+    let direAbilityData = {};
+    direAbilityData.key = "dire_ability_build";
+    direAbilityData.playersData = direPlayersObject;
+    direAbilityBuild.data.push(direAbilityData);
+
+    //#endregion Dire's ability build
+
+    let result = [
+      matchRecap,
+      radiantPlayers,
+      direPlayers,
+      radiantAbilityBuild,
+      direAbilityBuild
+    ];
 
     if (data.radiant_gold_adv) {
       result.push(radiantGoldAdv);
@@ -768,7 +897,7 @@ class MatchOverview extends Component {
         }
       };
       xpGraph = (
-        <View style={{ backgroundColor: themeColors.backgroundTableEven }}>                   
+        <View style={{ backgroundColor: themeColors.backgroundTableEven }}>
           <ScrollView horizontal showsHorizontalScrollIndicator={true}>
             <View style={{ flexDirection: "row" }}>
               <StockLine
@@ -790,111 +919,41 @@ class MatchOverview extends Component {
       return <View />;
     } else if (section.key == 2) {
       return (
-        <View styleName="vertical">
-          <View
-            styleName="horizontal h-start v-end"
-            style={{ marginTop: 10, marginBottom: 5 }}
-          >
-            <Image
-              source={require("../assets/stats_bar.png")}
-              styleName="extra-small"
-            />
-            <Title
-              styleName="sm-gutter-left"
-              style={{ color: themeColors.white }}
-            >
-              Radiant Gold Advantage
-            </Title>
-          </View>
-          <Line />
-        </View>
+        <SectionHeader
+          title="Radiant Gold Advantage"
+          imgUrl={require("../assets/stats_bar.png")}
+        />
       );
     } else if (section.key == 3) {
       return (
-        <View styleName="vertical">
-          <View
-            styleName="horizontal h-start v-end"
-            style={{ marginTop: 10, marginBottom: 5 }}
-          >
-            <Image
-              source={require("../assets/stats_bar.png")}
-              styleName="extra-small"
-            />
-            <Title
-              styleName="sm-gutter-left"
-              style={{ color: themeColors.white }}
-            >
-              Radiant XP Advantage
-            </Title>
-          </View>
-          <Line />
-        </View>
+        <SectionHeader
+          title="Radiant XP Advantage"
+          imgUrl={require("../assets/stats_bar.png")}
+        />
       );
     } else if (section.key == 4) {
       return (
-        <View styleName="vertical">
-          <View styleName="horizontal h-start">
-            <Image
-              source={require("../assets/radiant.png")}
-              styleName="extra-small"
-            />
-            <Title
-              styleName="sm-gutter-left"
-              style={{ color: themeColors.radiant }}
-            >
-              RADIANT
-            </Title>
-          </View>
-          <Line color={themeColors.radiant} />
-          <Header
-            headers={[
-              { title: "Hero" },
-              { title: "Player" },
-              { title: "K/D/A" },
-              { title: "GPM" },
-              { title: "XPM" }
-            ]}
-            contentStyle={{
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center"
-            }}
-          />
-        </View>
+        <SectionHeader
+          title="Radiant"
+          imgUrl={require("../assets/radiant.png")}
+        />
       );
     } else if (section.key == 5) {
       return (
-        <View styleName="vertical">
-          <View styleName="horizontal h-start">
-            <Image
-              source={require("../assets/dire.png")}
-              styleName="extra-small"
-            />
-            <Title
-              styleName="sm-gutter-left"
-              style={{ color: themeColors.dire }}
-            >
-              DIRE
-            </Title>
-          </View>
-          <Line color={themeColors.dire} />
-          <Header
-            headers={[
-              { title: "Hero" },
-              { title: "Player" },
-              { title: "K/D/A" },
-              { title: "GPM" },
-              { title: "XPM" }
-            ]}
-            contentStyle={{
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center"
-            }}
-          />
-        </View>
+        <SectionHeader title="Dire" imgUrl={require("../assets/dire.png")} />
+      );
+    } else if (section.key == 6) {
+      return (
+        <SectionHeader
+          title="Radiant - Ability Build"
+          imgUrl={require("../assets/radiant.png")}
+        />
       );
     }
+  }
+
+  toggleAbilityPopup() {
+    this.setState({ abilityDetailsModal: !this.state.abilityDetailsModal });
   }
 
   render() {
@@ -916,13 +975,22 @@ class MatchOverview extends Component {
     // }
 
     return (
-      <View styleName="fill-parent dota2">
+      <View styleName="horizontal h-center v-center fill-parent dota2">
         <SectionList
           style={styles.sectionListContainer}
           sections={this.state.sections}
           renderSectionHeader={this.renderSectionHeader}
           extraData={this.state.lastRowPressed}
+          getItemLayout={this.getItemLayout}
         />
+        <Modal
+          isVisible={this.state.abilityDetailsModal}
+          onBackdropPress={this.toggleAbilityPopup}
+        >
+          <View style={styles.modalContent}>
+            <Text>Hello!</Text>
+          </View>
+        </Modal>
       </View>
     );
   }
@@ -934,6 +1002,14 @@ MatchOverview.navigationOptions = {
 };
 
 const styles = {
+  modalContent: {
+    backgroundColor: "white",
+    padding: 22,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 4,
+    borderColor: "rgba(0, 0, 0, 0.1)"
+  },
   container: {
     ".odd": {
       backgroundColor: themeColors.backgroundTableOdd
