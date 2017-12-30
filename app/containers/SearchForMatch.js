@@ -23,7 +23,6 @@ class SearchForMatch extends Component {
       isWrongMatchId: false
     };
 
-    this.goToMatchCategoryScreen = this.goToMatchCategoryScreen.bind(this);
     this.goToMatchDetailsScreen = this.goToMatchDetailsScreen.bind(this);
     this.onChangeText = this.onChangeText.bind(this);
     this.fetchMatchDetails = this.fetchMatchDetails.bind(this);
@@ -38,19 +37,6 @@ class SearchForMatch extends Component {
         this.setState({ isWrongMatchId: false });
       }
     }
-  }
-
-  goToMatchCategoryScreen() {
-    // first: reset match category's stack
-    const resetAction = NavigationActions.reset({
-      index: 0,
-      actions: [
-        NavigationActions.navigate({ routeName: ScreenTypes.MatchCategory })
-      ],
-      key: ScreenTypes.MatchCategory
-    });
-
-    this.props.navigation.dispatch(navigateToMenuScreen(ScreenTypes.Match));
   }
 
   goToStart = () => {

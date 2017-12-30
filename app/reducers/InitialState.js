@@ -98,4 +98,14 @@ export default {
     isEmptyHHRecord: false,
     hhRecords: []
   },
+  topStreamer: {
+    isLoadingTopStreamer: false,
+    isEmptyTopStreamer: false,
+    topStreamers: {}
+  },
+  topLiveGame: {
+    isLoadingTopLiveGame: false,
+    isEmptyTopLiveGame: false,
+    topLiveGames: []
+  },
 };

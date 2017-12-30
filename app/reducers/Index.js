@@ -14,6 +14,8 @@ import deathsRecordState from "./DeathsRecordReducer";
 import assistsRecordState from "./AssistsRecordReducer";
 import gpmRecordState from "./GPMRecordReducer";
 import xpmRecordState from "./XPMRecordReducer";
+import topStreamerState from "./TopStreamerReducer";
+import topLiveGameState from "./TopLiveGameReducer";
 
 const rootReducer = combineReducers({
   nav,
@@ -31,6 +33,8 @@ const rootReducer = combineReducers({
   assistsRecordState,
   gpmRecordState,
   xpmRecordState,
+  topStreamerState,
+  topLiveGameState
 });
 
 export default rootReducer;

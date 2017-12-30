@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { View } from "@shoutem/ui";
 import Spinner from "react-native-spinkit";
 
-const Loading = ({}) => (
+const Loading = ({ type = "9CubeGrid" }) => (
   <View
     style={{
       flex: 1,
@@ -10,7 +10,7 @@ const Loading = ({}) => (
       alignItems: "center"
     }}
   >
-    <Spinner size={45} type="9CubeGrid" color="#fff" />
+    <Spinner size={45} type={type} color="#fff" />
   </View>
 );
 

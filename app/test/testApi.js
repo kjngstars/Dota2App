@@ -17,6 +17,7 @@ import record_xpm from "./record_xpm.json"
 import record_lh from "./record_lh.json"
 import record_dn from "./record_dn.json"
 import record_td from "./record_td.json"
+import livegame from "./livegame.json";
 
 const delay = 1000;
 export const testId = 3558108479;
@@ -139,4 +140,13 @@ export function getXPMRecord(){
     }, delay);
   });
 }
+
+export function getTopLiveGame(){
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {     
+      resolve(livegame);
+    }, delay);
+  });
+}
+
 

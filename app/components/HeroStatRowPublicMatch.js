@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import { View, Image, Text, Icon, Title, TouchableOpacity } from "@shoutem/ui";
 import themeColors from "../themes/colors";
 import { connectStyle } from "@shoutem/theme";
-import { dimensionRelativeToIphone } from "@shoutem/ui/theme";
 import PercentStat from "../components/PercentStat";
 
+import { dimensionRelativeToIphone } from "@shoutem/ui/theme";
 const DRTI = dimensionRelativeToIphone;
 
 export const HERO_STAT_ROW_HEIGHT = 50;

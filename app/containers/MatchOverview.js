@@ -20,6 +20,7 @@ import PlayerStatsRow, {
 import Line from "../components/Line";
 import Header from "../components/Header";
 import SkillBuild, { CELL_SIZE } from "../containers/SkillBuild";
+import SectionHeader from "../components/SectionHeader";
 
 import { getHeroImage } from "../utils/getHeroImage";
 import { getItemImage } from "../utils/getItemImage";
@@ -46,7 +47,6 @@ import sectionListGetItemLayout from "react-native-section-list-get-item-layout"
 import * as matchDetailsAction from "../actions/MatchDetailsAction";
 
 // components
-
 const SideOverviewHeader = ({ side, imgUrl }) => {
   return (
     <View styleName="vertical">
@@ -60,23 +60,6 @@ const SideOverviewHeader = ({ side, imgUrl }) => {
         </Title>
       </View>
       <Line color={themeColors.radiant} />
-    </View>
-  );
-};
-
-const SectionHeader = ({ imgUrl, title }) => {
-  return (
-    <View styleName="vertical" style={{ height: 50 }}>
-      <View
-        styleName="horizontal h-start v-end"
-        style={{ marginTop: 10, marginBottom: 5 }}
-      >
-        <Image source={imgUrl} styleName="extra-small" />
-        <Title styleName="sm-gutter-left" style={{ color: themeColors.white }}>
-          {title}
-        </Title>
-      </View>
-      <Line />
     </View>
   );
 };
@@ -981,7 +964,7 @@ class MatchOverview extends Component {
           sections={this.state.sections}
           renderSectionHeader={this.renderSectionHeader}
           extraData={this.state.lastRowPressed}
-          getItemLayout={this.getItemLayout}
+          getItemLayout={this.getItemLayout}                    
         />
         <Modal
           isVisible={this.state.abilityDetailsModal}
