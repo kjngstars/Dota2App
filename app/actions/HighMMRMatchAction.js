@@ -21,8 +21,9 @@ function receiveEmptyHighMMRMatchDetails() {
   };
 }
 
-export function fetchHighMMRMatches(matchId) {
-  var endpoint = "matches/" + matchId;
+//https://api.opendota.com/api/publicMatches?mmr_descending=1
+export function fetchHighMMRMatches() {
+  var endpoint = "publicMatches?mmr_descending=1";
   return dispatch => {
     dispatch(requestHighMMRMatchDetails());
 

@@ -1,4 +1,4 @@
-import { TabNavigator} from "react-navigation";
+import { TabNavigator } from "react-navigation";
 import HeroRankings from "../containers/HeroRankings";
 import HeroOverview from "../containers/HeroOverview";
 import tabConfig from "./TabConfig";
@@ -11,9 +11,11 @@ const HeroDetails = TabNavigator(
     },
     [ScreenTypes.HeroRanking]: {
       screen: HeroRankings
-    },     
+    }
   },
-  Object.assign({}, tabConfig, { initialRouteName: ScreenTypes.HeroOverview})
+  Object.assign({}, tabConfig, {
+    initialRouteName: ScreenTypes.HeroOverview
+  })
 );
 
 export default HeroDetails;

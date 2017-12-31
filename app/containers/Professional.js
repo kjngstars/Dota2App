@@ -100,7 +100,7 @@ class Professional extends Component {
   }
 
   fetchProMatches() {
-    this.props.actions.testFetchProMatches();
+    this.props.actions.fetchProMatches();
   }
 
   renderFooter() {
@@ -151,8 +151,7 @@ class Professional extends Component {
         <FlatList
           style={styles.container}
           data={this.state.proMatches[currentPageIndex]}
-          renderItem={this.renderItem}
-          ItemSeparatorComponent={() => <Line color={themeColors.greyBorder} />}
+          renderItem={this.renderItem}          
           getItemLayout={this.getItemLayout}
           refreshing={this.state.refreshing}
           onRefresh={this.onRefresh}

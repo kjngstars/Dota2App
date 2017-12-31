@@ -21,7 +21,7 @@ import themeColors from "../themes/colors";
 import { connectStyle } from "@shoutem/theme";
 import { connect } from "react-redux";
 import { getGetOrdinal } from "../utils/utilsFunction";
-import { testFetchKillsRecord } from "../actions/KillsRecordAction";
+import { fetchKillsRecord } from "../actions/KillsRecordAction";
 import { RECORD_ROW_HEIGHT } from "../components/RecordRow";
 
 import moment from "moment";
@@ -54,7 +54,7 @@ class KillsRecord extends Component {
   }
 
   componentDidMount() {
-    this.props.actions.testFetchKillsRecord();
+    this.props.actions.fetchKillsRecord();
   }
 
   onPage(index) {
@@ -168,7 +168,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToprops(dispatch) {
   return {
-    actions: bindActionCreators({ testFetchKillsRecord }, dispatch)
+    actions: bindActionCreators({ fetchKillsRecord }, dispatch)
   };
 }
 

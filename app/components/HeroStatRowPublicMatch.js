@@ -3,13 +3,14 @@ import { View, Image, Text, Icon, Title, TouchableOpacity } from "@shoutem/ui";
 import themeColors from "../themes/colors";
 import { connectStyle } from "@shoutem/theme";
 import PercentStat from "../components/PercentStat";
+import Ripple from "react-native-material-ripple";
 
 import { dimensionRelativeToIphone } from "@shoutem/ui/theme";
 const DRTI = dimensionRelativeToIphone;
 
 export const HERO_STAT_ROW_HEIGHT = 50;
 
-const HeroStatRowPublicMatch = ({ style, heroStat, index }) => {
+const HeroStatRowPublicMatch = ({ style, heroStat, index, onPress }) => {
   let style_name = "horizontal even";
   let content = <View />;
   if (index % 2) {
@@ -20,15 +21,17 @@ const HeroStatRowPublicMatch = ({ style, heroStat, index }) => {
     <View styleName={style_name} style={style.container}>
       <View style={style.hero}>
         <Image source={heroStat.heroImg} style={style.heroAvatar} />
-        <View styleName="horizontal h-start v-center">
-          <Text style={{ fontSize: 12, color: themeColors.action }}>
-            {heroStat.heroName}
-          </Text>
-          <Icon
-            name="right-arrow"
-            style={{ fontSize: 14, color: themeColors.action }}
-          />
-        </View>
+        <Ripple onPress={onPress}>
+          <View styleName="horizontal h-start v-center">
+            <Text style={{ fontSize: 12, color: themeColors.action }}>
+              {heroStat.heroName}
+            </Text>
+            <Icon
+              name="right-arrow"
+              style={{ fontSize: 14, color: themeColors.action }}
+            />
+          </View>
+        </Ripple>
       </View>
       <View style={style.statContainer}>
         <View style={style.stat}>
@@ -47,7 +50,7 @@ const HeroStatRowPublicMatch = ({ style, heroStat, index }) => {
           <Text style={{ fontSize: 13 }}>{heroStat.winMatches}</Text>
         </View>
         <PercentStat percent={heroStat.winRate} />
-      </View>      
+      </View>
     </View>
   );
 };

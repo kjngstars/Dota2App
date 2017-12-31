@@ -21,19 +21,19 @@ function receiveEmptyHeroStats() {
   };
 }
 
-export function fetchMatchDetails(matchId) {
-  var endpoint = "matches/" + matchId;
+export function fetchHeroStats() {
+  var endpoint = "heroStats";
   return dispatch => {
-    dispatch(requestMatchDetails());
+    dispatch(requestHeroStats());
 
     var jsonData;
     return fetchAPI(endpoint)
       .then(json => {
-        dispatch(receiveMatchDetails(json));
+        dispatch(receiveHeroStats(json));
       })
       .catch(error => {
-        console.log("Action - FETCH MATCH DETAILS ERROR - " + error);
-        dispatch(receiveEmptyMatchDetails());
+        console.log("Action - FETCH HERO STATS ERROR - " + error);
+        dispatch(receiveEmptyHeroStats());
       });
   };
 }

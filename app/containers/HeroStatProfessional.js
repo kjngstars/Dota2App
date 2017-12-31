@@ -13,7 +13,7 @@ import { createGroupedArray, round } from "../utils/utilsFunction";
 
 import themeColors from "../themes/colors";
 import * as heroStatActions from "../actions/HeroStatAction";
-import { navigateToMenuScreen } from "../actions/NavigationAction";
+import { navigateToMenuScreen, setParams } from "../actions/NavigationAction";
 import { sendHeroData } from "../actions/HeroOverviewActions";
 import { connectStyle } from "@shoutem/theme";
 import { connect } from "react-redux";
@@ -46,6 +46,7 @@ class HeroStatProfessional extends Component {
     this.sortPick = this.sortStat.bind(this, "pick");
     this.sortBan = this.sortStat.bind(this, "ban");
     this.sortWin = this.sortStat.bind(this, "win");
+    this.onPressRow = this.onPressRow.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -63,7 +64,7 @@ class HeroStatProfessional extends Component {
   }
 
   componentDidMount() {
-    this.props.actions.testFetchHeroStats();
+    this.props.actions.fetchHeroStats();
   }
 
   calculateTotalProMatches(heroStats) {
@@ -80,7 +81,7 @@ class HeroStatProfessional extends Component {
 
     for (let i = 0; i < heroStats.length; i++) {
       let processedStat = {
-        heroData: {},
+        heroData: {}
       };
       const heroStat = heroStats[i];
 
@@ -111,6 +112,7 @@ class HeroStatProfessional extends Component {
         : round(proWin / proPick * 100, 1);
 
       //hero data
+      processedStat.heroData.heroId = heroStat["id"];
       processedStat.heroData.name = heroStat["localized_name"];
       processedStat.heroData.primaryAttribute = heroStat["primary_attr"];
       processedStat.heroData.attackType = heroStat["attack_type"];
@@ -143,9 +145,14 @@ class HeroStatProfessional extends Component {
     return processedData;
   }
 
-  onPressRow(heroData) {
-    this.props.sendHeroData(heroData);
-    this.props.navigation.dispatch(navigateToMenuScreen(ScreenTypes.HeroOverview));
+  onPressRow(heroId) {
+    this.props.navigation.dispatch(
+      navigateToMenuScreen(ScreenTypes.HeroOverview, { heroId })
+    );
+
+    this.props.navigation.dispatch(
+      setParams({ heroId: heroId }, ScreenTypes.HeroRanking)
+    );
   }
 
   renderItem({ item, index }) {
@@ -153,7 +160,7 @@ class HeroStatProfessional extends Component {
       <HeroStatRowProMatch
         heroStat={item}
         index={index}
-        onPress={() => this.onPressRow(item.heroData)}
+        onPress={() => this.onPressRow(item.heroData.heroId)}
       />
     );
   }
@@ -276,7 +283,7 @@ class HeroStatProfessional extends Component {
       screenHeight
     } = this.state;
 
-    let content = <View styleName="fill-parent dota2"/>;
+    let content = <View styleName="fill-parent dota2" />;
 
     if (isLoadingHeroStats) {
       content = (

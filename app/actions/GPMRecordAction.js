@@ -15,25 +15,25 @@ function receiveGPMRecord(gpmRecords) {
   };
 }
 
-function receiveEmptyAssistsRecord() {
+function receiveEmptyGPMRecord() {
   return {
     type: ActionTypes.RECEIVE_EMPTY_GPM_RECORD
   };
 }
 
-export function fetchDurationRecord(matchId) {
-  var endpoint = "matches/" + matchId;
+export function fetchGPMRecord() {
+  var endpoint = "records/gold_per_min";
   return dispatch => {
-    dispatch(requestMatchDetails());
+    dispatch(requestGPMRecord());
 
     var jsonData;
     return fetchAPI(endpoint)
       .then(json => {
-        dispatch(receiveMatchDetails(json));
+        dispatch(receiveGPMRecord(json));
       })
       .catch(error => {
-        console.log("Action - FETCH MATCH DETAILS ERROR - " + error);
-        dispatch(receiveEmptyMatchDetails());
+        console.log("Action - FETCH GPM RECORD ERROR - " + error);
+        dispatch(receiveEmptyGPMRecord());
       });
   };
 }
@@ -48,7 +48,7 @@ export function testFetchGPMRecord() {
       })
       .catch(error => {
         console.log("Action -TEST FETCH GPM RECORD ERROR - " + error);
-        dispatch(receiveEmptyAssistsRecord());
+        dispatch(receiveEmptyGPMRecord());
       });
   };
 }

@@ -21,8 +21,9 @@ function receiveEmptyProMatchDetails() {
   };
 }
 
-export function fetchProMatches(matchId) {
-  var endpoint = "matches/" + matchId;
+//https://api.opendota.com/api/proMatches
+export function fetchProMatches() {
+  var endpoint = "proMatches";
   return dispatch => {
     dispatch(requestProMatchDetails());
 
@@ -32,7 +33,7 @@ export function fetchProMatches(matchId) {
         dispatch(receiveProMatchDetails(json));
       })
       .catch(error => {
-        console.log("Action - FETCH MATCH DETAILS ERROR - " + error);
+        console.log("Action - FETCH PRO MATCHES ERROR - " + error);
         dispatch(receiveEmptyProMatchDetails());
       });
   };

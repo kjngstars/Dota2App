@@ -21,7 +21,7 @@ import themeColors from "../themes/colors";
 import { connectStyle } from "@shoutem/theme";
 import { connect } from "react-redux";
 import { getGetOrdinal } from "../utils/utilsFunction";
-import { testFetchGPMRecord } from "../actions/GPMRecordAction";
+import { fetchGPMRecord } from "../actions/GPMRecordAction";
 import { RECORD_ROW_HEIGHT } from "../components/RecordRow";
 
 import moment from "moment";
@@ -54,7 +54,7 @@ class GPMRecord extends Component {
   }
 
   componentDidMount() {
-    this.props.actions.testFetchGPMRecord();
+    this.props.actions.fetchGPMRecord();
   }
 
   onPage(index) {
@@ -168,7 +168,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToprops(dispatch) {
   return {
-    actions: bindActionCreators({ testFetchGPMRecord }, dispatch)
+    actions: bindActionCreators({ fetchGPMRecord }, dispatch)
   };
 }
 

@@ -277,7 +277,7 @@ class Start extends Component {
         return <LiveGameRow key={index} liveGame={game} index={index} />;
       });
     }
-
+    const fast = <View/>;
     return (
       <View styleName="fill-parent dota2" style={styles.container}>
         <ScrollView>
@@ -288,14 +288,14 @@ class Start extends Component {
               rightIcon="refresh"
               rightIconOnPress={this.fetchTopLiveGame}
             />
-            {topLiveGame}
+            {fast}
           </View>
           <View style={{ flex: 1 }}>
             <SectionHeader
               title="Top Livestreams"
               imgUrl={require("../assets/twitch.png")}
             />
-            {topStreamer}
+            {fast}
           </View>
         </ScrollView>
       </View>

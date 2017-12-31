@@ -58,7 +58,7 @@ class LowMMR extends Component {
   }
 
   componentDidMount() {
-    this.props.actions.testFetchLowMMRMatches("asc");
+    this.props.actions.fetchLowMMRMatches();
   }
 
   normalizeGameMode(gameMode) {

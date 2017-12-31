@@ -21,7 +21,7 @@ import themeColors from "../themes/colors";
 import { connectStyle } from "@shoutem/theme";
 import { connect } from "react-redux";
 import { getGetOrdinal } from "../utils/utilsFunction";
-import { testFetchAssistsRecord } from "../actions/AssistsRecordAction";
+import { fetchAssistsRecord } from "../actions/AssistsRecordAction";
 import { RECORD_ROW_HEIGHT } from "../components/RecordRow";
 
 import moment from "moment";
@@ -54,7 +54,7 @@ class AssistsRecord extends Component {
   }
 
   componentDidMount() {
-    this.props.actions.testFetchAssistsRecord();
+    this.props.actions.fetchAssistsRecord();
   }
 
   onPage(index) {
@@ -159,7 +159,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToprops(dispatch) {
   return {
-    actions: bindActionCreators({ testFetchAssistsRecord }, dispatch)
+    actions: bindActionCreators({ fetchAssistsRecord }, dispatch)
   };
 }
 

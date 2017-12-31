@@ -20,7 +20,7 @@ import themeColors from "../themes/colors";
 import { connectStyle } from "@shoutem/theme";
 import { connect } from "react-redux";
 import { getGetOrdinal } from "../utils/utilsFunction";
-import { testFetchDurationRecord } from "../actions/DurationRecordAction";
+import { fetchDurationRecord } from "../actions/DurationRecordAction";
 import { RECORD_ROW_HEIGHT } from "../components/RecordRow";
 import moment from "moment";
 
@@ -52,7 +52,7 @@ class DurationRecord extends Component {
   }
 
   componentDidMount() {
-    this.props.actions.testFetchDurationRecord();
+    this.props.actions.fetchDurationRecord();
   }
 
   processDurationRecord(durationRecords) {
@@ -205,7 +205,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToprops(dispatch) {
   return {
-    actions: bindActionCreators({ testFetchDurationRecord }, dispatch)
+    actions: bindActionCreators({ fetchDurationRecord }, dispatch)
   };
 }
 

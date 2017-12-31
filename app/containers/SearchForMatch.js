@@ -27,6 +27,7 @@ class SearchForMatch extends Component {
     this.onChangeText = this.onChangeText.bind(this);
     this.fetchMatchDetails = this.fetchMatchDetails.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+    console.log("this.props.navigation.state: " + JSON.stringify(this.props.navigation.state.params));
   }
 
   componentWillReceiveProps(nextProps) {
@@ -45,7 +46,7 @@ class SearchForMatch extends Component {
         stackCounts: this.props.stackCounts
       })
     );
-  };
+  };dfx 
 
   goToMatchDetailsScreen() {
     // first: reset match category's stack

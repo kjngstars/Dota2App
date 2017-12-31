@@ -21,19 +21,19 @@ function receiveEmptyHeroRanking() {
   };
 }
 
-export function fetchMatchDetails(matchId) {
-  var endpoint = "matches/" + matchId;
+export function fetchHeroRanking(heroId) {
+  var endpoint = "rankings?hero_id=" + heroId;
   return dispatch => {
-    dispatch(requestMatchDetails());
+    dispatch(requestHeroRanking());
 
     var jsonData;
     return fetchAPI(endpoint)
       .then(json => {
-        dispatch(receiveMatchDetails(json));
+        dispatch(receiveHeroRanking(json));
       })
       .catch(error => {
-        console.log("Action - FETCH MATCH DETAILS ERROR - " + error);
-        dispatch(receiveEmptyMatchDetails());
+        console.log(heroId + " Action - FETCH HERO RANKING ERROR - " + error);
+        dispatch(receiveEmptyHeroRanking());
       });
   };
 }

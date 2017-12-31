@@ -21,19 +21,19 @@ function receiveEmptyDeathsRecord() {
   };
 }
 
-export function fetchDurationRecord(matchId) {
-  var endpoint = "matches/" + matchId;
+export function fetchDeathsRecord() {
+  var endpoint = "records/deaths";
   return dispatch => {
-    dispatch(requestMatchDetails());
+    dispatch(requestDeathsRecord());
 
     var jsonData;
     return fetchAPI(endpoint)
       .then(json => {
-        dispatch(receiveMatchDetails(json));
+        dispatch(receiveDeathsRecord(json));
       })
       .catch(error => {
         console.log("Action - FETCH MATCH DETAILS ERROR - " + error);
-        dispatch(receiveEmptyMatchDetails());
+        dispatch(receiveEmptyDeathsRecord());
       });
   };
 }

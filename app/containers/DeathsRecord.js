@@ -21,7 +21,7 @@ import themeColors from "../themes/colors";
 import { connectStyle } from "@shoutem/theme";
 import { connect } from "react-redux";
 import { getGetOrdinal } from "../utils/utilsFunction";
-import { testFetchDeathsRecord } from "../actions/DeathsRecordAction";
+import { fetchDeathsRecord } from "../actions/DeathsRecordAction";
 import { RECORD_ROW_HEIGHT } from "../components/RecordRow";
 
 import moment from "moment";
@@ -54,7 +54,7 @@ class DeathsRecord extends Component {
   }
 
   componentDidMount() {
-    this.props.actions.testFetchDeathsRecord();
+    this.props.actions.fetchDeathsRecord();
   }
 
   onPage(index) {
@@ -168,7 +168,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToprops(dispatch) {
   return {
-    actions: bindActionCreators({ testFetchDeathsRecord }, dispatch)
+    actions: bindActionCreators({ fetchDeathsRecord }, dispatch)
   };
 }
 

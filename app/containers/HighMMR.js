@@ -58,7 +58,7 @@ class HighMMR extends Component {
   }
 
   componentDidMount() {
-    this.props.actions.testFetchHighMMRMatches("desc");
+    this.props.actions.fetchHighMMRMatches();
   }
 
   normalizeGameMode(gameMode) {

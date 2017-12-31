@@ -21,8 +21,9 @@ function receiveEmptyLowMMRMatchDetails() {
   };
 }
 
+//https://api.opendota.com/api/publicMatches?mmr_ascending=1
 export function fetchLowMMRMatches(matchId) {
-  var endpoint = "matches/" + matchId;
+  var endpoint = "/publicMatches?mmr_ascending=1";
   return dispatch => {
     dispatch(requestLowMMRMatchDetails());
 
@@ -32,7 +33,7 @@ export function fetchLowMMRMatches(matchId) {
         dispatch(receiveLowMMRMatchDetails(json));
       })
       .catch(error => {
-        console.log("Action - FETCH PUBLIC MATCH DETAILS ERROR - " + error);
+        console.log("Action - FETCH LOW MMR MATCHES ERROR - " + error);
         dispatch(receiveEmptyLowMMRMatchDetails());
       });
   };

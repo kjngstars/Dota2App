@@ -149,7 +149,7 @@ class PlayerSearch extends React.PureComponent {
 
   onSearchPlayer() {
     Keyboard.dismiss();
-    this.props.actions.testFetchPlayers(this.state.playerName).then(() => {
+    this.props.actions.fetchPlayers(this.state.playerName).then(() => {
       if (!this.state.isFirstRequestHasBeenSent) {
         this.setState({ isFirstRequestHasBeenSent: true });
       }

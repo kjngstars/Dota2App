@@ -21,19 +21,19 @@ function receiveEmptyXPMRecord() {
   };
 }
 
-export function fetchDurationRecord(matchId) {
-  var endpoint = "matches/" + matchId;
+export function fetchXPMRecord() {
+  var endpoint = "records/xp_per_min";
   return dispatch => {
-    dispatch(requestMatchDetails());
+    dispatch(requestXPMRecord());
 
     var jsonData;
     return fetchAPI(endpoint)
       .then(json => {
-        dispatch(receiveMatchDetails(json));
+        dispatch(receiveXPMRecord(json));
       })
       .catch(error => {
-        console.log("Action - FETCH MATCH DETAILS ERROR - " + error);
-        dispatch(receiveEmptyMatchDetails());
+        console.log("Action - FETCH XPM RECORD ERROR - " + error);
+        dispatch(receiveEmptyXPMRecord());
       });
   };
 }

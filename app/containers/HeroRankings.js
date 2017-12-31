@@ -29,7 +29,7 @@ class HeroRankings extends Component {
     this.getItemLayout = this.getItemLayout.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
     this.keyExtractor = this.keyExtractor.bind(this);
-    this.processRankingData = this.processRankingData.bind(this);
+    this.processRankingData = this.processRankingData.bind(this);    
   }
 
   componentWillReceiveProps(nextProps) {
@@ -44,8 +44,8 @@ class HeroRankings extends Component {
     }
   }
 
-  componentDidMount() {
-    this.props.actions.testFetchHeroRanking();
+  componentDidMount() {    
+    this.props.actions.fetchHeroRanking(this.props.navigation.state.params.heroId);
   }
 
   getGetOrdinal(n) {
@@ -184,6 +184,7 @@ const styles = {
 
 function mapStateToProps(state) {
   return {
+    heroId: state.heroOverviewState.heroId,
     isLoadingHeroRanking: state.heroRankingState.isLoadingHeroRanking,
     isEmptyHeroRanking: state.heroRankingState.isEmptyHeroRanking,
     heroRanking: state.heroRankingState.heroRanking

@@ -21,19 +21,19 @@ function receiveEmptyAssistsRecord() {
   };
 }
 
-export function fetchDurationRecord(matchId) {
-  var endpoint = "matches/" + matchId;
+export function fetchAssistsRecord() {
+  var endpoint = "records/assists";
   return dispatch => {
-    dispatch(requestMatchDetails());
+    dispatch(requestAssistsRecord());
 
     var jsonData;
     return fetchAPI(endpoint)
       .then(json => {
-        dispatch(receiveMatchDetails(json));
+        dispatch(receiveAssistsRecord(json));
       })
       .catch(error => {
-        console.log("Action - FETCH MATCH DETAILS ERROR - " + error);
-        dispatch(receiveEmptyMatchDetails());
+        console.log("Action - FETCH ASSIST RECORD ERROR - " + error);
+        dispatch(receiveEmptyAssistsRecord());
       });
   };
 }

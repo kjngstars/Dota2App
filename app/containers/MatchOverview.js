@@ -193,6 +193,7 @@ class MatchOverview extends Component {
     //this.sortPlayers = this.sortPlayers.bind(this);
     this.renderSectionHeader = this.renderSectionHeader.bind(this);
     this.toggleAbilityPopup = this.toggleAbilityPopup.bind(this);
+    
     this.getItemLayout = sectionListGetItemLayout({
       getItemHeight: (rowData, sectionIndex, rowIndex) => {
         if (sectionIndex == 0) {

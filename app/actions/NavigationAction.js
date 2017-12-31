@@ -33,3 +33,12 @@ export function toggleDrawer(){
   const action = NavigationActions.navigate({routeName:'DrawerToggle'});
   return action;
 }
+
+export function setParams(data, routeKey){
+  const action = NavigationActions.setParams({
+    params: data,
+    key: routeKey
+  });
+
+  return action;
+}

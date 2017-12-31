@@ -3,7 +3,7 @@ import ScreenTypes from "../navigators/ScreenTypes";
 import { NavigationBarWithMatchSearch } from "../components/NavigationBar";
 import { View, Text, Image, Icon, TouchableOpacity } from "@shoutem/ui";
 import Pagination from "../components/Pagination";
-import PublicMatchRow, {
+import HeroStatRowPublicMatch, {
   HERO_STAT_ROW_HEIGHT
 } from "../components/HeroStatRowPublicMatch";
 import { FlatList, ScrollView, Dimensions, Picker } from "react-native";
@@ -13,9 +13,10 @@ import ModalDropdown from "react-native-modal-dropdown";
 import Line from "../components/Line";
 
 import { createGroupedArray, round } from "../utils/utilsFunction";
+import * as heroStatActions from "../actions/HeroStatAction";
+import { navigateToMenuScreen, setParams } from "../actions/NavigationAction";
 
 import themeColors from "../themes/colors";
-import * as heroStatActions from "../actions/HeroStatAction";
 import { connectStyle } from "@shoutem/theme";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -88,6 +89,7 @@ class HeroStatPublic extends Component {
     this.sortHero = this.sortStat.bind(this, "name");
     this.sortPick = this.sortStat.bind(this, "pick");
     this.sortWin = this.sortStat.bind(this, "win");
+    this.onPressRow = this.onPressRow.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -286,8 +288,24 @@ class HeroStatPublic extends Component {
     return processedData;
   }
 
+  onPressRow(heroId) {
+    this.props.navigation.dispatch(
+      navigateToMenuScreen(ScreenTypes.HeroOverview, { heroId })
+    );
+
+    this.props.navigation.dispatch(
+      setParams({ heroId: heroId }, ScreenTypes.HeroRanking)
+    );
+  }
+
   renderItem({ item, index }) {
-    return <PublicMatchRow heroStat={item} index={index} />;
+    return (
+      <HeroStatRowPublicMatch
+        heroStat={item}
+        index={index}
+        onPress={() => this.onPressRow(item.id)}
+      />
+    );
   }
 
   getItemLayout(data, index) {
@@ -336,9 +354,17 @@ class HeroStatPublic extends Component {
       return (
         <View
           styleName="horizontal h-start v-center sm-gutter"
-          style={{ backgroundColor: "rgb(46, 47, 64)"}}
+          style={{ backgroundColor: "rgb(46, 47, 64)" }}
         >
-          <Text style={{ marginRight: 5, color: themeColors.orange, fontWeight: 'bold'  }}>{rowData.name}</Text>
+          <Text
+            style={{
+              marginRight: 5,
+              color: themeColors.orange,
+              fontWeight: "bold"
+            }}
+          >
+            {rowData.name}
+          </Text>
           <Image source={rowData.imgUrl} styleName="small-avatar" />
         </View>
       );
@@ -472,7 +498,10 @@ class HeroStatPublic extends Component {
               renderRow={this.renderRowDropdown}
               onSelect={this.onOptionSelected}
               renderSeparator={this.renderSeparatorDropdown}
-              dropdownStyle={{borderWidth: 1, borderColor: 'rgba(46, 47, 64, 0.6)'}}
+              dropdownStyle={{
+                borderWidth: 1,
+                borderColor: "rgba(46, 47, 64, 0.6)"
+              }}
             >
               <View styleName="horizontal h-center v-center">
                 <Icon name="drop-down" style={{ color: "#fff" }} />

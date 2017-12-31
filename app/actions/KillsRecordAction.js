@@ -21,19 +21,19 @@ function receiveEmptyKillsRecord() {
   };
 }
 
-export function fetchDurationRecord(matchId) {
-  var endpoint = "matches/" + matchId;
+export function fetchKillsRecord() {
+  var endpoint = "records/kills";
   return dispatch => {
-    dispatch(requestMatchDetails());
+    dispatch(requestKillsRecord());
 
     var jsonData;
     return fetchAPI(endpoint)
       .then(json => {
-        dispatch(receiveMatchDetails(json));
+        dispatch(receiveKillsRecord(json));
       })
       .catch(error => {
-        console.log("Action - FETCH MATCH DETAILS ERROR - " + error);
-        dispatch(receiveEmptyMatchDetails());
+        console.log("Action - FETCH KILLS RECORD ERROR - " + error);
+        dispatch(receiveEmptyKillsRecord());
       });
   };
 }
