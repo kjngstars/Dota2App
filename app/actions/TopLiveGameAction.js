@@ -21,19 +21,19 @@ function receiveEmptyTopLiveGame() {
   };
 }
 
-export function fetchTopLiveGame(matchId) {
-  var endpoint = "matches/" + matchId;
+export function fetchTopLiveGame() {
+  var endpoint = "live";
   return dispatch => {
-    dispatch(requestMatchDetails());
+    dispatch(requestTopLiveGame());
 
     var jsonData;
     return fetchAPI(endpoint)
       .then(json => {
-        dispatch(receiveMatchDetails(json));
+        dispatch(receiveTopLiveGame(json));
       })
       .catch(error => {
-        console.log("Action - FETCH MATCH DETAILS ERROR - " + error);
-        dispatch(receiveEmptyMatchDetails());
+        console.log("Action - FETCH TOP LIVE GAME ERROR - " + error);
+        dispatch(receiveEmptyTopLiveGame());
       });
   };
 }

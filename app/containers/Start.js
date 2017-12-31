@@ -12,7 +12,7 @@ import {
   Card,
   Image
 } from "@shoutem/ui";
-import { ScrollView } from "react-native";
+import { ScrollView, RefreshControl } from "react-native";
 
 import SectionHeader from "../components/SectionHeader";
 import LeftHeader from "../components/LeftHeader";
@@ -29,7 +29,7 @@ import ScreenTypes from "../navigators/ScreenTypes";
 
 import * as navigationAction from "../actions/NavigationAction";
 import { fetchTopStreamer } from "../actions/TopStreamerAction";
-import { testFetchTopLiveGame } from "../actions/TopLiveGameAction";
+import { fetchTopLiveGame } from "../actions/TopLiveGameAction";
 import { reduceText } from "../utils/utilsFunction";
 import themeColors from "../themes/colors";
 
@@ -48,7 +48,7 @@ class Start extends Component {
     this.navigateToMatchScreen = this.navigateToMatchScreen.bind(this);
     this.processTopLiveGameData = this.processTopLiveGameData.bind(this);
     this.normalizeGameMode = this.normalizeGameMode.bind(this);
-    this.setPlayerInfo = this.setPlayerInfo.bind(this);
+    this.fetchTopLiveGame = this.fetchTopLiveGame.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -68,7 +68,11 @@ class Start extends Component {
 
   componentDidMount() {
     this.props.actions.fetchTopStreamer();
-    this.props.actions.testFetchTopLiveGame();
+    this.fetchTopLiveGame();
+  }
+
+  fetchTopLiveGame(){
+    this.props.actions.fetchTopLiveGame();
   }
 
   navigateToMatchScreen() {
@@ -86,21 +90,6 @@ class Start extends Component {
       normalized += split[i].charAt(0).toUpperCase() + split[i].slice(1) + " ";
     }
     return normalized;
-  }
-
-  setPlayerInfo(index, isRadiant = true) {
-    const endpoint = "https://api.opendota.com/api/players/" + playerId;
-    fetch(endpoint)
-      .then(response => {
-        return response.json();
-      })
-      .then(json => {
-        player.personaname = json["personaname"];
-      })
-      .catch(error => {
-        player.personaname = "Anonymous";
-        console.log("Action - FETCH PLAYER INFO ERROR - " + error);
-      });
   }
 
   processTopLiveGameData(topLiveGames) {
@@ -152,7 +141,7 @@ class Start extends Component {
           processLiveGame.isBanPick = true;
         } else {
           const radiantPlayersList = liveGame.players.slice(0, 5);
-          const direPlayersList = liveGame.players.slice(5, 10);          
+          const direPlayersList = liveGame.players.slice(5, 10);
 
           for (let player of radiantPlayersList) {
             let processPlayer = {};
@@ -221,10 +210,6 @@ class Start extends Component {
 
       processedTopLiveGames[i] = processLiveGame;
     }
-
-    console.log(
-      "process top live game: " + JSON.stringify(processedTopLiveGames)
-    );
 
     return processedTopLiveGames;
   }
@@ -298,17 +283,19 @@ class Start extends Component {
         <ScrollView>
           <View style={{ flex: 1 }}>
             <SectionHeader
+              title="Top Live Games"
+              imgUrl={require("../assets/dota2.png")}
+              rightIcon="refresh"
+              rightIconOnPress={this.fetchTopLiveGame}
+            />
+            {topLiveGame}
+          </View>
+          <View style={{ flex: 1 }}>
+            <SectionHeader
               title="Top Livestreams"
               imgUrl={require("../assets/twitch.png")}
             />
             {topStreamer}
-          </View>
-          <View style={{ flex: 1 }}>
-            <SectionHeader
-              title="Top Live Games"
-              imgUrl={require("../assets/dota2.png")}
-            />
-            {topLiveGame}
           </View>
         </ScrollView>
       </View>
@@ -350,7 +337,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     actions: bindActionCreators(
-      { fetchTopStreamer, testFetchTopLiveGame },
+      { fetchTopStreamer, fetchTopLiveGame },
       dispatch
     )
   };

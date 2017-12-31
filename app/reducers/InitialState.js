@@ -108,4 +108,9 @@ export default {
     isEmptyTopLiveGame: false,
     topLiveGames: []
   },
+  playerInfo: {
+    isLoadingPlayerInfo: false,
+    isEmptyPlayerInfo: false,
+    playerInfo: {}
+  },
 };
