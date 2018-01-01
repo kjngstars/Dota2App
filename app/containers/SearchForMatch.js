@@ -4,7 +4,7 @@ import * as navigationAction from "../actions/NavigationAction";
 import { connectStyle } from "@shoutem/theme";
 import { DefaultNavigationBar } from "../components/NavigationBar";
 import Search from "../components/Search";
-import { navigateToMenuScreen, goBack } from "../actions/NavigationAction";
+import { navigateToMenuScreen } from "../actions/NavigationAction";
 import ScreenTypes from "../navigators/ScreenTypes";
 import { NavigationActions } from "react-navigation";
 import { connect } from "react-redux";
@@ -26,8 +26,7 @@ class SearchForMatch extends Component {
     this.goToMatchDetailsScreen = this.goToMatchDetailsScreen.bind(this);
     this.onChangeText = this.onChangeText.bind(this);
     this.fetchMatchDetails = this.fetchMatchDetails.bind(this);
-    this.onSubmit = this.onSubmit.bind(this);
-    console.log("this.props.navigation.state: " + JSON.stringify(this.props.navigation.state.params));
+    this.onSubmit = this.onSubmit.bind(this);    
   }
 
   componentWillReceiveProps(nextProps) {
@@ -40,19 +39,9 @@ class SearchForMatch extends Component {
     }
   }
 
-  goToStart = () => {
-    this.props.navigation.dispatch(
-      navigateToMenuScreen(ScreenTypes.Home, {
-        stackCounts: this.props.stackCounts
-      })
-    );
-  };dfx 
-
   goToMatchDetailsScreen() {
-    // first: reset match category's stack
-
     this.props.navigation.dispatch(
-      navigateToMenuScreen(ScreenTypes.MatchDetail)
+      navigateToMenuScreen(ScreenTypes.MatchDetail, { matchId: 0 })
     );
   }
 
@@ -144,7 +133,7 @@ class SearchForMatch extends Component {
 }
 
 SearchForMatch.navigationOptions = ({ navigation }) => ({
-  title: "Search For Match",
+  title: "Search For Match"
   //headerLeft: <LeftHeader navigation={navigation} />
 });
 
@@ -165,6 +154,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     fetchMatchDetails: matchId =>
+      dispatch(matchDetailsAction.fetchMatchDetails(matchId)),
+    testFetchMatchDetails: matchId =>
       dispatch(matchDetailsAction.testFetchMatchDetails(matchId))
   };
 }

@@ -42,6 +42,7 @@ class AssistsRecord extends Component {
     this.renderFooter = this.renderFooter.bind(this);
     this.renderHeader = this.renderHeader.bind(this);
     this.keyExtractor = this.keyExtractor.bind(this);
+
   }
 
   componentWillMount() {}
@@ -62,7 +63,7 @@ class AssistsRecord extends Component {
   }
 
   renderItem({ item, index }) {
-    return <RecordRow record={item} index={index} />;
+    return <RecordRow record={item} index={index} navigation={this.props.navigation}/>;
   }
 
   getItemLayout(data, index) {
@@ -100,7 +101,16 @@ class AssistsRecord extends Component {
   renderHeader() {
     const styles = this.props.style;
 
-    return <Header headers={[{title:"RANK"}, {title:"ASSISTS"}, {title:"ID"}, {title: ""}]} />;
+    return (
+      <Header
+        headers={[
+          { title: "RANK" },
+          { title: "ASSISTS" },
+          { title: "ID" },
+          { title: "" }
+        ]}
+      />
+    );
   }
 
   render() {

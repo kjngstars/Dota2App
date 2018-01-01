@@ -23,7 +23,7 @@ class CustomDrawer extends Component {
 
     this.state = {
       selectedIndex: this.props.navigation.state.routes[0].index
-    };    
+    };
   }
 
   renderHeader() {
@@ -40,33 +40,36 @@ class CustomDrawer extends Component {
   componentWillReceiveProps(nextProps) {
     const currentIndex = this.props.navigation.state.routes[0].index;
     const selectedIndex = nextProps.navigation.state.routes[0].index;
-    if(currentIndex != selectedIndex){
-      this.setState({selectedIndex});
+    if (currentIndex != selectedIndex) {
+      this.setState({ selectedIndex });
     }
   }
 
   render(item) {
     const styles = this.props.style;
-    const {selectedIndex} = this.state;
+    const { selectedIndex } = this.state;
     const stackRoutes = this.props.navigation.state.routes[0].routes;
     const stackCounts = this.props.navigation.state.routes[0].routes.length + 1;
-    
+
     return (
-      <View style={styles.container}>
-        <Heading style={styles.heading}>Menu</Heading>
+      <View style={styles.container}>        
         {menu.map((item, index) => {
-          const activeStyle =
-            stackRoutes[selectedIndex].routeName == item.routeName ? "active" : "";
+          const isActive =
+            stackRoutes[selectedIndex].routeName == item.routeName
+              ? true
+              : false;
 
           return (
             <CustomDrawerItem
               key={index}
               route={item}
-              style={styles}
-              styleName={activeStyle}
+              isActive={isActive}
+              //styleName={activeStyle}
               onPress={() => {
                 this.props.navigation.dispatch(
-                  navigationAction.navigateToMenuScreen(item.routeName,{stackCounts: stackCounts})
+                  navigationAction.navigateToMenuScreen(item.routeName, {
+                    stackCounts: stackCounts
+                  })
                 );
                 this.setState({ selectedItem: item.key });
               }}
@@ -78,36 +81,13 @@ class CustomDrawer extends Component {
   }
 }
 
-const styles = {
-  heading: {
-    alignSelf: "flex-start"
-  },
+const styles = {  
   container: {
-    ".active": {
-      backgroundColor: "#222222"
-    }
-  },
-  item: {
-    flexDirection: "row",
-    justifyContent: "center",
-    ".active": {
-      backgroundColor: "#222222"
-    }
-  },
-  title: {
-    ".active": {
-      color: "#FFFFFF"
-    }
-  }
-  //   ".active": {
-  //     container: {
-  //       backgroundColor: "#222222"
-  //     },
-  //     title: {
-  //       color: "#FFFFFF"
-  //     }
-  //   }
-};
+    flex: 1,
+    flexDirection: "column",        
+    paddingLeft: 20,
+    backgroundColor: "rgb(46, 47, 64)",   
+  },  
+}
 
 export default connectStyle("dota2app.CustomDrawer", styles)(CustomDrawer);
-

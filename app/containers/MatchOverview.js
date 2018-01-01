@@ -12,6 +12,8 @@ import {
   Title,
   Heading
 } from "@shoutem/ui";
+
+import Loading from "../components/Loading";
 import PlayerStatsRow, {
   Item,
   Stat,
@@ -24,7 +26,7 @@ import SectionHeader from "../components/SectionHeader";
 
 import { getHeroImage } from "../utils/getHeroImage";
 import { getItemImage } from "../utils/getItemImage";
-import { getSideImage } from "../utils/utilsFunction";
+import { getSideImage, reduceText } from "../utils/utilsFunction";
 import { kFormatter } from "../utils/kFormatter";
 
 import regionsArray from "../json/regions_list.json";
@@ -42,6 +44,7 @@ import { connect } from "react-redux";
 import { connectStyle } from "@shoutem/theme";
 import { bindActionCreators } from "redux";
 import moment from "moment";
+import _ from "lodash";
 import sectionListGetItemLayout from "react-native-section-list-get-item-layout";
 
 import * as matchDetailsAction from "../actions/MatchDetailsAction";
@@ -86,7 +89,7 @@ const SideOverview = ({ side, title }) => {
   );
 };
 
-const MatchRecap = ({ matchRecap }) => {
+const MatchRecap = ({ matchRecap, height }) => {
   let sideVictoryImage = require("../assets/dire.png");
   let heading = (
     <Heading style={{ color: themeColors.dire }}>DIRE VICTORY</Heading>
@@ -110,9 +113,9 @@ const MatchRecap = ({ matchRecap }) => {
         borderRadius: 3,
         borderWidth: 1,
         borderColor: "rgba(0,0,0,0.2)",
-        height: 180,
+        height: height,
         flexDirection: "column",
-        justifyContent: "center",        
+        justifyContent: "center"
       }}
     >
       <View styleName="horizontal h-center v-center">
@@ -148,10 +151,23 @@ const MatchRecap = ({ matchRecap }) => {
       </View>
       <View styleName="horizontal space-between">
         <RecapStat stat="MATCH ID" value={matchRecap.matchId} />
-        <RecapStat stat="REGION" value={matchRecap.region} />
+        <RecapStat stat="REGION" value={reduceText(matchRecap.region, 9)} />
         <RecapStat stat="SKILL" value={matchRecap.skill} />
         <RecapStat stat="AVG MMR" value={matchRecap.averageMMR} />
       </View>
+      {matchRecap.isWarning && (
+        <Text
+          style={{
+            color: themeColors.orange,
+            fontSize: 13,
+            marginTop: 10,
+            textAlign: "center",            
+          }}
+        >
+          The replay for this match has not yet been parsed. Not all data may be
+          available.
+        </Text>
+      )}
     </View>
   );
 };
@@ -193,11 +209,11 @@ class MatchOverview extends Component {
     //this.sortPlayers = this.sortPlayers.bind(this);
     this.renderSectionHeader = this.renderSectionHeader.bind(this);
     this.toggleAbilityPopup = this.toggleAbilityPopup.bind(this);
-    
+
     this.getItemLayout = sectionListGetItemLayout({
       getItemHeight: (rowData, sectionIndex, rowIndex) => {
         if (sectionIndex == 0) {
-          return 200;
+          return rowData.isWarning ? 200 : 180;
         } else if (sectionIndex == 1 || sectionIndex == 2) {
           if (rowIndex == 0) {
             return 40;
@@ -217,7 +233,10 @@ class MatchOverview extends Component {
   }
 
   componentWillMount() {
-    if (this.props.matchDetails && this.props.matchDetails.players.length > 0) {
+    if (
+      !_.isEmpty(this.props.matchDetails) &&
+      this.props.matchDetails.players.length > 0
+    ) {
       var sections = this.processRawData(this.props.matchDetails);
       //console.log(sections);
       this.setState({ sections: sections });
@@ -225,9 +244,23 @@ class MatchOverview extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.matchDetails && nextProps.matchDetails.players.length > 0) {
+    console.log(
+      "componentWillReceiveProps matchoverview " +
+        JSON.stringify(nextProps.matchDetails)
+    );
+    if (
+      !_.isEmpty(nextProps.matchDetails) &&
+      nextProps.matchDetails.players.length > 0
+    ) {
       var sections = this.processRawData(nextProps.matchDetails);
-      this.setState(sections);
+      this.setState({ sections: sections });
+    }
+  }
+
+  componentDidMount() {
+    const { matchId } = this.props.navigation.state.params;
+    if (matchId != 0) {
+      this.props.actions.fetchMatchDetails(matchId);
     }
   }
 
@@ -501,7 +534,9 @@ class MatchOverview extends Component {
     let matchRecap = {
       data: [],
       key: "1",
-      renderItem: ({ item }) => <MatchRecap matchRecap={item} />
+      renderItem: ({ item }) => (
+        <MatchRecap matchRecap={item} height={item.isWarning ? 200 : 180} />
+      )
     };
     let recap = {};
     recap.key = data.duration;
@@ -512,7 +547,8 @@ class MatchOverview extends Component {
     recap.radiantScore = data.radiant_score;
     recap.direScore = data.dire_score;
     recap.radiantWin = data.radiant_win;
-
+    recap.isWarning = data.radiant_gold_adv ? false : true;
+    
     if (data.duration && data.start_time) {
       var endedTime = (data.start_time + data.duration) * 1000;
       var now = moment();
@@ -933,6 +969,13 @@ class MatchOverview extends Component {
           imgUrl={require("../assets/radiant.png")}
         />
       );
+    } else if (section.key == 7) {
+      return (
+        <SectionHeader
+          title="Dire - Ability Build"
+          imgUrl={require("../assets/dire.png")}
+        />
+      );
     }
   }
 
@@ -942,31 +985,27 @@ class MatchOverview extends Component {
 
   render() {
     const styles = this.props.style;
-    const { navigation } = this.props;
-    let parsedWarning = <View />;
-    // if (!this.props.matchDetails.radiant_gold_adv) {
-    //   parsedWarning = (
-    //     <View>
-    //       <View style={{ flex: 7 }}>
-    //         <Text style={{ color: this.props.secondLegend, fontSize: 16 }}>
-    //           The replay for this match has not yet been parsed. Not all data
-    //           may be available.
-    //         </Text>
-    //       </View>
-    //     </View>
-    //   );
-    //   goldGraph = <View />;
-    // }
+    const { navigation, isLoadingMatchDetails } = this.props;
+    const { sections } = this.state;
 
-    return (
-      <View styleName="horizontal h-center v-center fill-parent dota2">
+    let content = <View />;
+    if (isLoadingMatchDetails) {
+      content = <Loading />;
+    } else if (sections.length > 0) {
+      content = (
         <SectionList
           style={styles.sectionListContainer}
           sections={this.state.sections}
           renderSectionHeader={this.renderSectionHeader}
           extraData={this.state.lastRowPressed}
-          getItemLayout={this.getItemLayout}                    
+          getItemLayout={this.getItemLayout}
         />
+      );
+    }
+
+    return (
+      <View styleName="horizontal h-center v-center fill-parent dota2">
+        {content}
         <Modal
           isVisible={this.state.abilityDetailsModal}
           onBackdropPress={this.toggleAbilityPopup}
@@ -1106,6 +1145,6 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-export default connectStyle("dota2app.Overview", styles)(
+export default connectStyle("dota2app.MatchOverview", styles)(
   connect(mapStateToProps, mapDispatchToProps)(MatchOverview)
 );

@@ -20,6 +20,7 @@ import Loading from "../components/Loading";
 import moment from "moment";
 import themeColors from "../themes/colors";
 import Pagination from "../components/Pagination";
+import { navigateToMenuScreen } from "../actions/NavigationAction";
 
 class HighMMR extends Component {
   constructor(props) {
@@ -35,11 +36,10 @@ class HighMMR extends Component {
     this.onRefresh = this.onRefresh.bind(this);
     this.normalizeGameMode = this.normalizeGameMode.bind(this);
     this.normalizeLobbyType = this.normalizeLobbyType.bind(this);
-    this.nextPage = this.nextPage.bind(this);
-    this.prevPage = this.prevPage.bind(this);
-    this.goToPage = this.goToPage.bind(this);
+    this.onPage = this.onPage.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
     this.keyExtractor = this.keyExtractor.bind(this);
+    this.onItemPress = this.onItemPress.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -128,8 +128,20 @@ class HighMMR extends Component {
     return processedData;
   }
 
+  onItemPress(matchId) {
+    this.props.navigation.dispatch(
+      navigateToMenuScreen(ScreenTypes.MatchDetail, { matchId: matchId })
+    );
+  }
+
   renderItem({ item, index }) {
-    return <PublicMatchRow match={item} index={index} />;
+    return (
+      <PublicMatchRow
+        match={item}
+        index={index}
+        onPress={() => this.onItemPress(item.matchId)}
+      />
+    );
   }
 
   getItemLayout(data, index) {
@@ -142,27 +154,7 @@ class HighMMR extends Component {
 
   onRefresh() {}
 
-  nextPage() {
-    let { currentPageIndex } = this.state;
-    let totalPages = this.state.highMMRMatches.length;
-    this.setState({
-      currentPageIndex:
-        currentPageIndex < (totalPages - 1)
-          ? currentPageIndex + 1
-          : currentPageIndex
-    });
-  }
-
-  prevPage() {
-    let { currentPageIndex } = this.state;
-
-    this.setState({
-      currentPageIndex:
-        currentPageIndex > 0 ? currentPageIndex - 1 : currentPageIndex
-    });
-  }
-
-  goToPage(index) {
+  onPage(index) {
     this.setState({ currentPageIndex: index });
   }
 
@@ -175,9 +167,7 @@ class HighMMR extends Component {
         totalPages={totalPages}
         currentIndex={currentPageIndex}
         numberPagesShow={5}
-        onNext={this.nextPage}
-        onPrev={this.prevPage}
-        onPage={this.goToPage}
+        onPage={this.onPage}
       />
     );
   }
@@ -191,7 +181,7 @@ class HighMMR extends Component {
     const { navigation } = this.props;
     const { isLoadingHighMMRMatches, highMMRMatches } = this.props;
     const { currentPageIndex } = this.state;
-    
+
     let content = <View />;
 
     if (isLoadingHighMMRMatches) {

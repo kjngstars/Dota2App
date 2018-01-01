@@ -7,7 +7,7 @@ import tabConfig from "./TabConfig";
 import stackConfig from "./StackConfig";
 import ScreenTypes from "./ScreenTypes";
 
-const MatchCategory = TabNavigator(
+const MatchNavigator = TabNavigator(
   {
     Professional: {
       screen: Professional
@@ -22,31 +22,13 @@ const MatchCategory = TabNavigator(
   Object.assign({}, tabConfig, { initialRouteName: ScreenTypes.Professional })
 );
 
-const MatchDetails = TabNavigator(
+export const MatchDetails = TabNavigator(
   {
     [ScreenTypes.MatchOverview.screen]: {
       screen: MatchOverview
     }
   },
   tabConfig
-);
-
-const MatchNavigator = StackNavigator(
-  {
-    MatchCategory: {
-      screen: MatchCategory,
-      navigationOptions:  ({ navigation }) => ({
-        
-      })
-    },
-    MatchDetail: {
-      screen: MatchDetails
-    }
-  },
-  Object.assign({}, stackConfig, {
-    initialRouteName: ScreenTypes.MatchCategory,
-    headerMode: "none"
-  })
 );
 
 export default MatchNavigator;

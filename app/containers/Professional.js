@@ -14,6 +14,7 @@ import ProMatchRow, { PRO_MATCH_ROW_HEIGHT } from "../components/ProMatchRow";
 import Spinner from "react-native-spinkit";
 import { createGroupedArray } from "../utils/utilsFunction";
 import Pagination from "../components/Pagination";
+import { navigateToMenuScreen } from "../actions/NavigationAction";
 
 class Professional extends Component {
   constructor(props) {
@@ -27,12 +28,13 @@ class Professional extends Component {
 
     this.renderItem = this.renderItem.bind(this);
     this.onRefresh = this.onRefresh.bind(this);
-    this.onPage = this.onPage.bind(this);    
+    this.onPage = this.onPage.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
     this.keyExtractor = this.keyExtractor.bind(this);
+    this.onItemPress = this.onItemPress.bind(this);
   }
 
-  componentDidMount() {    
+  componentDidMount() {
     this.fetchProMatches();
   }
 
@@ -79,10 +81,16 @@ class Professional extends Component {
 
   onPage(index) {
     this.setState({ currentPageIndex: index });
-  }  
+  }
+
+  onItemPress(matchId) {
+    this.props.navigation.dispatch(
+      navigateToMenuScreen(ScreenTypes.MatchDetail, { matchId: matchId })
+    );
+  }
 
   renderItem({ item, index }) {
-    return <ProMatchRow match={item} index={index} />;
+    return <ProMatchRow match={item} index={index} onPress={()=>this.onItemPress(item.matchId)}/>;
   }
 
   getItemLayout(data, index) {
@@ -111,7 +119,7 @@ class Professional extends Component {
       <Pagination
         totalPages={totalPages}
         currentIndex={currentPageIndex}
-        numberPagesShow={5}        
+        numberPagesShow={5}
         onPage={this.onPage}
       />
     );
@@ -151,7 +159,7 @@ class Professional extends Component {
         <FlatList
           style={styles.container}
           data={this.state.proMatches[currentPageIndex]}
-          renderItem={this.renderItem}          
+          renderItem={this.renderItem}
           getItemLayout={this.getItemLayout}
           refreshing={this.state.refreshing}
           onRefresh={this.onRefresh}

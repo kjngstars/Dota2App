@@ -104,8 +104,7 @@ class Skill extends React.PureComponent {
     this.setState({ showPopup: !this.state.showPopup });
   }
 
-  render() {
-    console.log("render skill");
+  render() {    
     const { ability, onAbilityPress } = this.props;
 
     const abilityImage = getAbilityImage(ability);
@@ -135,8 +134,7 @@ class SkillBuildRow extends React.PureComponent {
     super(props);
   }
 
-  render() {
-    console.log("render SkillBuildRow");
+  render() {    
     const { data, index, onAbilityPress } = this.props;
 
     let bgColor = themeColors.backgroundTableEven;
@@ -212,7 +210,7 @@ class SkillBuild extends React.PureComponent {
   }
 
   render() {
-    console.log("render SkillBuild");
+    
     const styles = this.props.style;
     const { data, onAbilityPress } = this.props;
 

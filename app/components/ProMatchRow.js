@@ -3,14 +3,14 @@ import { View, Image, Text, Caption, Subtitle, Icon, Title } from "@shoutem/ui";
 import themeColors from "../themes/colors";
 import { connectStyle } from "@shoutem/theme";
 
+import Ripple from "react-native-material-ripple";
 
 export const PRO_MATCH_ROW_HEIGHT = 90;
 
-const ProMatchRow = ({ style, match, index }) => {
-
-  let style_name = "horizontal h-end v-center even sm-gutter-left";
+const ProMatchRow = ({ style, match, index, onPress }) => {
+  let style_name = "horizontal h-end v-center odd sm-gutter-left";
   if (index % 2) {
-      style_name = "horizontal h-end v-center odd sm-gutter-left";
+    style_name = "horizontal h-end v-center even sm-gutter-left";
   }
 
   let radiant = (
@@ -61,41 +61,43 @@ const ProMatchRow = ({ style, match, index }) => {
   }
 
   return (
-    <View styleName={style_name} style={style.container}>
-      <View styleName="vertical v-center" style={{ flex: 1 }}>
-        <Text style={{ fontSize: 14, color: "#fff", fontWeight: "bold" }}>
-          {match.leagueName}
-        </Text>
-        <View styleName="horizontal v-center">
-          <View styleName="vertical h-start" style={{ flex: 1 }}>
-            <Text style={{ fontSize: 12, color: "#6BF" }}>{match.matchId}</Text>
-            <Text style={{ fontSize: 12, color: "#fff" }}>
-              {match.formattedDuration}
-            </Text>
-            <Caption>{match.endedTime}</Caption>
-          </View>
-          <View styleName="vertical v-center" style={style.team}>
-            {radiant}
-            {dire}
+    <Ripple onPress={onPress}>
+      <View styleName={style_name} style={style.container}>
+        <View styleName="vertical v-center" style={{ flex: 1 }}>
+          <Text style={{ fontSize: 14, color: "#fff", fontWeight: "bold" }}>
+            {match.leagueName}
+          </Text>
+          <View styleName="horizontal v-center">
+            <View styleName="vertical h-start" style={{ flex: 1 }}>
+              <Text style={{ fontSize: 12, color: "#6BF" }}>
+                {match.matchId}
+              </Text>
+              <Text style={{ fontSize: 12, color: "#fff" }}>
+                {match.formattedDuration}
+              </Text>
+              <Caption>{match.endedTime}</Caption>
+            </View>
+            <View styleName="vertical v-center" style={style.team}>
+              {radiant}
+              {dire}
+            </View>
           </View>
         </View>
+        <Icon name="right-arrow" style={{ color: "#fff", fontSize: 30 }} />
       </View>
-      <Icon name="right-arrow" style={{ color: "#fff", fontSize: 30 }} />
-    </View>
+    </Ripple>
   );
 };
 
 const styles = {
   container: {
-    marginTop: 5,
-    marginBottom: 5,
     height: PRO_MATCH_ROW_HEIGHT,
     ".odd": {
       backgroundColor: themeColors.backgroundTableOdd
     },
     ".even": {
       backgroundColor: themeColors.backgroundTableEven
-    },
+    }
   },
   team: {
     flex: 1

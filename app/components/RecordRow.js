@@ -8,12 +8,14 @@ import heroes from "dotaconstants/build/heroes.json";
 import Ripple from "react-native-material-ripple";
 import { reduceText } from "../utils/utilsFunction";
 
+import { navigateToMenuScreen } from "../actions/NavigationAction";
 import { dimensionRelativeToIphone } from "@shoutem/ui/theme";
+import ScreenTypes from "../navigators/ScreenTypes";
 const DRTI = dimensionRelativeToIphone;
 
 export const RECORD_ROW_HEIGHT = 50;
 
-const RecordRow = ({ style, index, record }) => {
+const RecordRow = ({ style, index, record, navigation }) => {
   let style_name = "horizontal v-center even";
   if (index % 2) {
     style_name = "horizontal v-center odd";
@@ -28,7 +30,15 @@ const RecordRow = ({ style, index, record }) => {
         <Text style={{ color: themeColors.white }}>{record.score}</Text>
       </View>
       <View style={{ flex: 1 }} styleName="vertical h-start v-center">
-        <Ripple>
+        <Ripple
+          onPress={() =>
+            navigation.dispatch(
+              navigateToMenuScreen(ScreenTypes.MatchDetail, {
+                matchId: record.matchId
+              })
+            )
+          }
+        >
           <View styleName="horizontal h-start v-center">
             <Text style={{ color: themeColors.action, fontSize: 12 }}>
               {record.matchId}

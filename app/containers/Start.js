@@ -45,7 +45,6 @@ class Start extends Component {
       topLiveGames: []
     };
 
-    this.navigateToMatchScreen = this.navigateToMatchScreen.bind(this);
     this.processTopLiveGameData = this.processTopLiveGameData.bind(this);
     this.normalizeGameMode = this.normalizeGameMode.bind(this);
     this.fetchTopLiveGame = this.fetchTopLiveGame.bind(this);
@@ -71,14 +70,8 @@ class Start extends Component {
     this.fetchTopLiveGame();
   }
 
-  fetchTopLiveGame(){
+  fetchTopLiveGame() {
     this.props.actions.fetchTopLiveGame();
-  }
-
-  navigateToMatchScreen() {
-    this.props.navigation.dispatch(
-      navigationAction.navigateToMenuScreen("MatchSearch")
-    );
   }
 
   normalizeGameMode(gameMode) {
@@ -277,7 +270,7 @@ class Start extends Component {
         return <LiveGameRow key={index} liveGame={game} index={index} />;
       });
     }
-    const fast = <View/>;
+    const fast = <View />;
     return (
       <View styleName="fill-parent dota2" style={styles.container}>
         <ScrollView>
@@ -288,14 +281,14 @@ class Start extends Component {
               rightIcon="refresh"
               rightIconOnPress={this.fetchTopLiveGame}
             />
-            {fast}
+            {topLiveGame}
           </View>
           <View style={{ flex: 1 }}>
             <SectionHeader
               title="Top Livestreams"
               imgUrl={require("../assets/twitch.png")}
             />
-            {fast}
+            {topStreamer}
           </View>
         </ScrollView>
       </View>

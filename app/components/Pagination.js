@@ -1,11 +1,13 @@
 import React, { Component } from "react";
-import { View, Image, Text, Icon, Button, TouchableOpacity } from "@shoutem/ui";
+import { View, Image, Text, Icon, Button } from "@shoutem/ui";
 import themeColors from "../themes/colors";
 import { connectStyle } from "@shoutem/theme";
 
+import Ripple from "react-native-material-ripple";
+
 const PageNumber = ({ index, currentIndex, onPage }) => {
   return (
-    <TouchableOpacity
+    <Ripple
       onPress={() => {
         if (index == currentIndex) return;
         onPage(index);
@@ -21,7 +23,7 @@ const PageNumber = ({ index, currentIndex, onPage }) => {
       >
         {index + 1}
       </Text>
-    </TouchableOpacity>
+    </Ripple>
   );
 };
 
@@ -166,18 +168,18 @@ class Pagination extends Component {
     if (totalPages <= numberPagesShow && isPrev) {
       first = (
         <View styleName="horizontal h-start v-center" style={style.first}>
-          <TouchableOpacity onPress={this.prevPage}>
+          <Ripple onPress={this.prevPage}>
             <Icon
               name="left-arrow"
               style={{ color: themeColors.orange, fontSize: 22 }}
             />
-          </TouchableOpacity>
+          </Ripple>
         </View>
       );
     } else if (isPrev) {
       first = (
         <View styleName="horizontal space-between v-center" style={style.first}>
-          <TouchableOpacity
+          <Ripple
             onPress={() => {
               onPage(0);
             }}
@@ -191,13 +193,13 @@ class Pagination extends Component {
             >
               First
             </Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={this.prevPage}>
+          </Ripple>
+          <Ripple onPress={this.prevPage}>
             <Icon
               name="left-arrow"
               style={{ color: themeColors.orange, fontSize: 22 }}
             />
-          </TouchableOpacity>
+          </Ripple>
         </View>
       );
     }
@@ -205,24 +207,24 @@ class Pagination extends Component {
     if (totalPages <= numberPagesShow && isNext) {
       last = (
         <View styleName="horizontal h-end v-center" style={style.last}>
-          <TouchableOpacity onPress={this.nextPage}>
+          <Ripple onPress={this.nextPage}>
             <Icon
               name="right-arrow"
               style={{ color: themeColors.orange, fontSize: 22 }}
             />
-          </TouchableOpacity>
+          </Ripple>
         </View>
       );
     } else if (isNext) {
       last = (
         <View styleName="horizontal space-between v-center" style={style.last}>
-          <TouchableOpacity onPress={this.nextPage}>
+          <Ripple onPress={this.nextPage}>
             <Icon
               name="right-arrow"
               style={{ color: themeColors.orange, fontSize: 22 }}
             />
-          </TouchableOpacity>
-          <TouchableOpacity
+          </Ripple>
+          <Ripple
             onPress={() => {
               onPage(totalPages - 1);
             }}
@@ -236,7 +238,7 @@ class Pagination extends Component {
             >
               Last
             </Text>
-          </TouchableOpacity>
+          </Ripple>
         </View>
       );
     }
@@ -272,4 +274,4 @@ const styles = {
   }
 };
 
-export default connectStyle("dota2app.PagingFooter", styles)(Pagination);
+export default connectStyle("dota2app.Pagination", styles)(Pagination);

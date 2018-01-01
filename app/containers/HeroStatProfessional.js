@@ -112,32 +112,7 @@ class HeroStatProfessional extends Component {
         : round(proWin / proPick * 100, 1);
 
       //hero data
-      processedStat.heroData.heroId = heroStat["id"];
-      processedStat.heroData.name = heroStat["localized_name"];
-      processedStat.heroData.primaryAttribute = heroStat["primary_attr"];
-      processedStat.heroData.attackType = heroStat["attack_type"];
-      processedStat.heroData.roles = heroStat["roles"].join(", ");
-      processedStat.heroData.img = getHeroImage(heroStat["id"]);
-      processedStat.heroData.baseHealth = heroStat["base_health"];
-      processedStat.heroData.baseHealthRegen = heroStat["base_health_regen"];
-      processedStat.heroData.baseMana = heroStat["base_mana"];
-      processedStat.heroData.baseManaRegen = heroStat["base_mana_regen"];
-      processedStat.heroData.baseArmor = heroStat["base_armor"];
-      processedStat.heroData.baseMR = heroStat["base_mr"];
-      processedStat.heroData.baseAttackMin = heroStat["base_attack_min"];
-      processedStat.heroData.baseAttackMax = heroStat["base_attack_max"];
-      processedStat.heroData.baseStr = heroStat["base_str"];
-      processedStat.heroData.baseAgi = heroStat["base_agi"];
-      processedStat.heroData.baseInt = heroStat["base_int"];
-      processedStat.heroData.strGain = heroStat["str_gain"];
-      processedStat.heroData.agiGain = heroStat["agi_gain"];
-      processedStat.heroData.intGain = heroStat["int_gain"];
-      processedStat.heroData.attackRange = heroStat["attack_range"];
-      processedStat.heroData.projectileSpeed = heroStat["projectile_speed"];
-      processedStat.heroData.attackRate = heroStat["attack_rate"];
-      processedStat.heroData.moveSpeed = heroStat["move_speed"];
-      processedStat.heroData.turnRate = heroStat["turn_rate"];
-      processedStat.heroData.cmEnabled = heroStat["cm_enabled"];
+      processedStat.heroData.heroId = heroStat["id"];      
 
       processedData[i] = processedStat;
     }

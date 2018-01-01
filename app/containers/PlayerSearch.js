@@ -54,15 +54,14 @@ class PlayerSearch extends React.PureComponent {
       publicPlayers != nextProps.publicPlayers
     ) {
       if (nextProps.proPlayers.length > 0 && nextProps.publicPlayers.length == 0) {
-        console.log("i dont know what to say here: " + proPlayers.length);
+        
         this.setState({
           proPlayers: createGroupedArray(nextProps.proPlayers, 20),
           publicPlayers: [],
           currentIndexProPlayer: 0, currentIndexPublicPlayer: 0
         });
       } else {
-        //search in list pro players
-        console.log('we losted');
+        //search in list pro players        
         this.setState({
           proPlayers: createGroupedArray(
             this.findProPlayers(nextProps.proPlayers, this.state.playerName),
@@ -176,7 +175,7 @@ class PlayerSearch extends React.PureComponent {
           </View>
         );
       } else if (proPlayers.length > 0 && publicPlayers.length == 0) {
-        console.log("fffffffffffffffff");
+        
         proPlayerResults = (
           <View style={{ marginTop: 5, flex: 1 }}>
             <Text style={{ color: themeColors.orange, fontSize: 18 }}>

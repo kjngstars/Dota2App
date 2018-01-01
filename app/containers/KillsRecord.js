@@ -62,7 +62,13 @@ class KillsRecord extends Component {
   }
 
   renderItem({ item, index }) {
-    return <RecordRow record={item} index={index} />;
+    return (
+      <RecordRow
+        record={item}
+        index={index}
+        navigation={this.props.navigation}
+      />
+    );
   }
 
   getItemLayout(data, index) {

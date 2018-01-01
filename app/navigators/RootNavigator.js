@@ -7,12 +7,13 @@ import { DrawerNavigator, StackNavigator } from "react-navigation";
 import stackConfig from "./StackConfig";
 
 import CustomDrawer from "./CustomDrawer";
-import MatchNavigator from "./MatchNavigator";
+import MatchNavigator, {MatchDetails} from "./MatchNavigator";
 import SearchForMatch from "../containers/SearchForMatch";
 import PlayerSearch from "../containers/PlayerSearch";
 import HeroStatNavigator from "../navigators/HeroStatNavigator";
 import HeroDetailsNavigator from "../navigators/HeroDetailsNavigator";
 import RecordsNavigator from "../navigators/RecordsNavigator";
+import ScreenTypes from "./ScreenTypes";
 
 const RootStack = StackNavigator(
   {
@@ -36,6 +37,9 @@ const RootStack = StackNavigator(
     },
     [screenTypes.Records]: {
       screen: RecordsNavigator,
+    },
+    [ScreenTypes.MatchDetail]: {
+      screen: MatchDetails
     }
   },
   Object.assign({}, stackConfig, {

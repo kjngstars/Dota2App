@@ -2,6 +2,8 @@ import React from "react";
 import { connectStyle } from "@shoutem/theme";
 import { View, Icon, TouchableOpacity } from "@shoutem/ui";
 
+import Ripple from "react-native-material-ripple";
+
 import ScreenTypes from "../navigators/ScreenTypes";
 import {
   toggleDrawer,
@@ -10,17 +12,31 @@ import {
 
 const RightHeader = ({ navigation }) => (
   <View styleName="horizontal space-between">
-    <TouchableOpacity
+    <Ripple
+      rippleContainerBorderRadius={15}
       onPress={() =>
         navigation.dispatch(navigateToMenuScreen(ScreenTypes.MatchSearch))
       }
       style={{ marginRight: 5 }}
     >
-      <Icon name="search" style={{ color: "#FFFFFF" }} />
-    </TouchableOpacity>
-    <TouchableOpacity onPress={() => navigation.dispatch(toggleDrawer())}>
-      <Icon name="sidebar" style={{ color: "#FFFFFF" }} />
-    </TouchableOpacity>
+      <View
+        styleName="horizontal h-center v-center"
+        style={{ width: 30, height: 30 }}
+      >
+        <Icon name="search" style={{ color: "#FFFFFF" }} />
+      </View>
+    </Ripple>
+    <Ripple
+      rippleContainerBorderRadius={15}
+      onPress={() => navigation.dispatch(toggleDrawer())}
+    >
+      <View
+        styleName="horizontal h-center v-center"
+        style={{ width: 30, height: 30 }}
+      >
+        <Icon name="sidebar" style={{ color: "#FFFFFF" }} />
+      </View>
+    </Ripple>
   </View>
 );
 

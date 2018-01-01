@@ -2,15 +2,6 @@ import { NavigationActions } from "react-navigation";
 import * as ActionType from "./ActionTypes";
 import ScreenTypes from "../navigators/ScreenTypes";
 
-export function navigateToMatchScreen(params) {
-  const action = NavigationActions.navigate({
-    routeName: ScreenTypes.Match,
-    params: params
-  });
-
-  return action;
-}
-
 export function navigateToMenuScreen(routeName, params, subAction) {
   const action = NavigationActions.navigate({
     routeName: routeName,

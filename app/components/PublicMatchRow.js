@@ -2,28 +2,34 @@ import React, { Component } from "react";
 import { View, Image, Text, Caption, Subtitle, Icon, Title } from "@shoutem/ui";
 import themeColors from "../themes/colors";
 import { connectStyle } from "@shoutem/theme";
-import { dimensionRelativeToIphone } from "@shoutem/ui/theme";
 import Line from "../components/Line";
 
+import Ripple from "react-native-material-ripple";
+
+import { dimensionRelativeToIphone } from "@shoutem/ui/theme";
 const DRTI = dimensionRelativeToIphone;
 
 export const PUBLIC_MATCH_ROW_HEIGHT = 135;
 
-const PublicMatchRow = ({ style, match, index }) => {
+const PublicMatchRow = ({ style, match, index, onPress }) => {
   let style_name = "vertical h-center v-center even";
   if (index % 2) {
     style_name = "vertical h-center v-center odd";
   }
 
+  //console.log("re-render public match row");
+
   return (
     <View styleName={style_name} style={style.container}>
       <View styleName="vertical">
-        <View styleName="horizontal">
-          <Text style={{ color: "#6BF", fontSize: 14, marginRight: 1 }}>
-            {match.matchId}
-          </Text>
-          <Icon name="right-arrow" style={{ color: "#fff", fontSize: 20 }} />
-        </View>
+        <Ripple onPress={onPress}>
+          <View styleName="horizontal">
+            <Text style={{ color: "#6BF", fontSize: 14, marginRight: 1 }}>
+              {match.matchId}
+            </Text>
+            <Icon name="right-arrow" style={{ color: "#fff", fontSize: 20 }} />
+          </View>
+        </Ripple>
         <Text style={{ fontSize: 12 }}>{match.endedTime}</Text>
       </View>
       <View>

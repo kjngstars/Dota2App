@@ -84,7 +84,7 @@ class DurationRecord extends Component {
   }
 
   renderItem({ item, index }) {
-    return <RecordRow record={item} index={index} />;
+    return <RecordRow record={item} index={index} navigation={this.props.navigation}/>;
   }
 
   getItemLayout(data, index) {
@@ -125,7 +125,7 @@ class DurationRecord extends Component {
     return (
       <View style={styles.header}>
         <View style={{ flex: 1 }}>
-          <TouchableOpacity >
+          <TouchableOpacity>
             <Text style={{ color: "#fff", marginRight: 5 }}>RANK</Text>
           </TouchableOpacity>
         </View>
@@ -138,7 +138,7 @@ class DurationRecord extends Component {
           <TouchableOpacity>
             <Text style={{ color: "#fff", marginRight: 5 }}>ID</Text>
           </TouchableOpacity>
-        </View>        
+        </View>
       </View>
     );
   }
@@ -187,7 +187,7 @@ const styles = {
     paddingLeft: 15,
     paddingRight: 15
   },
-  header: {       
+  header: {
     flexDirection: "row",
     alignItems: "center",
     height: 40,
