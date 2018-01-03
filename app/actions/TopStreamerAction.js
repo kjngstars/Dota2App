@@ -8,6 +8,12 @@ function requestTopStreamer() {
   };
 }
 
+function refreshingTopStreamer() {
+  return {
+    type: ActionTypes.REFRESHING_TOP_STREAMER
+  };
+}
+
 function receiveTopStreamer(topStreamers) {
   return {
     type: ActionTypes.RECEIVE_TOP_STREAMER,
@@ -21,12 +27,16 @@ function receiveEmptyTopStreamer() {
   };
 }
 
-export function fetchTopStreamer(matchId) {
+export function fetchTopStreamer(refreshing = false) {
   const endpoint = "https://api.twitch.tv/kraken/streams/?game=Dota+2&limit=5";
   const clientId = "375i76dug5xiofpygmsaj6u14dh63o";
 
   return dispatch => {
-    dispatch(requestTopStreamer());
+    if (refreshing) {
+      dispatch(refreshingTopStreamer());
+    } else {
+      dispatch(requestTopStreamer());
+    }
 
     return fetch(endpoint, {
       headers: {

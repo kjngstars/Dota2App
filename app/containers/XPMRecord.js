@@ -21,7 +21,7 @@ import themeColors from "../themes/colors";
 import { connectStyle } from "@shoutem/theme";
 import { connect } from "react-redux";
 import { getGetOrdinal } from "../utils/utilsFunction";
-import { testFetchXPMRecord } from "../actions/XPMRecordAction";
+import { fetchXPMRecord } from "../actions/XPMRecordAction";
 import { RECORD_ROW_HEIGHT } from "../components/RecordRow";
 
 import moment from "moment";
@@ -31,17 +31,18 @@ class XPMRecord extends Component {
     super(props);
 
     this.state = {
-      xpmRecords: [],
-      refreshing: false,
+      xpmRecords: [],     
       currentPageIndex: 0
     };
 
     this.renderItem = this.renderItem.bind(this);
-    this.onRefresh = this.onRefresh.bind(this);
+    this.fetchingData = this.fetchingData.bind(this);
+    this.onRefreshing = this.fetchingData.bind(this, true);
     this.onPage = this.onPage.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
     this.renderHeader = this.renderHeader.bind(this);
     this.keyExtractor = this.keyExtractor.bind(this);
+    this.getItemLayout = this.getItemLayout.bind(this);
   }
 
   componentWillMount() {}
@@ -54,7 +55,11 @@ class XPMRecord extends Component {
   }
 
   componentDidMount() {
-    this.props.actions.testFetchXPMRecord();
+    this.fetchingData();
+  }
+
+  fetchingData(refreshing = false) {
+    this.props.actions.fetchXPMRecord(refreshing);
   }
 
   onPage(index) {
@@ -62,7 +67,13 @@ class XPMRecord extends Component {
   }
 
   renderItem({ item, index }) {
-    return <RecordRow record={item} index={index} navigation={this.props.navigation}/>;
+    return (
+      <RecordRow
+        record={item}
+        index={index}
+        navigation={this.props.navigation}
+      />
+    );
   }
 
   getItemLayout(data, index) {
@@ -71,12 +82,6 @@ class XPMRecord extends Component {
       length: RECORD_ROW_HEIGHT,
       index
     };
-  }
-
-  onRefresh() {
-    this.setState({
-      refreshing: true
-    });
   }
 
   keyExtractor(item, index) {
@@ -113,7 +118,7 @@ class XPMRecord extends Component {
   }
 
   render() {
-    const { isLoadingXPMRecord } = this.props;
+    const { isLoadingXPMRecord, isRefreshingXPMRecord } = this.props;
     const { xpmRecords, currentPageIndex } = this.state;
     const styles = this.props.style;
     let content = <View />;
@@ -126,8 +131,8 @@ class XPMRecord extends Component {
           data={xpmRecords[currentPageIndex]}
           renderItem={this.renderItem}
           getItemLayout={this.getItemLayout}
-          //refreshing={this.state.refreshing}
-          //onRefresh={this.onRefresh}
+          refreshing={isRefreshingXPMRecord}
+          onRefresh={this.onRefreshing}
           ListHeaderComponent={this.renderHeader}
           ListFooterComponent={this.renderFooter}
           keyExtractor={this.keyExtractor}
@@ -160,6 +165,7 @@ const styles = {
 
 function mapStateToProps(state) {
   return {
+    isRefreshingXPMRecord: state.xpmRecordState.isRefreshingXPMRecord,
     isLoadingXPMRecord: state.xpmRecordState.isLoadingXPMRecord,
     isEmptyXPMRecord: state.xpmRecordState.isEmptyXPMRecord,
     xpmRecords: state.xpmRecordState.xpmRecords
@@ -168,7 +174,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToprops(dispatch) {
   return {
-    actions: bindActionCreators({ testFetchXPMRecord }, dispatch)
+    actions: bindActionCreators({ fetchXPMRecord }, dispatch)
   };
 }
 

@@ -25,11 +25,12 @@ class HeroRankings extends Component {
     };
 
     this.renderItem = this.renderItem.bind(this);
-    this.onRefresh = this.onRefresh.bind(this);
+    this.fetchingData = this.fetchingData.bind(this);
+    this.onRefreshing = this.fetchingData.bind(this, true);
     this.getItemLayout = this.getItemLayout.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
     this.keyExtractor = this.keyExtractor.bind(this);
-    this.processRankingData = this.processRankingData.bind(this);    
+    this.processRankingData = this.processRankingData.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -44,8 +45,15 @@ class HeroRankings extends Component {
     }
   }
 
-  componentDidMount() {    
-    this.props.actions.fetchHeroRanking(this.props.navigation.state.params.heroId);
+  componentDidMount() {
+    this.fetchingData();
+  }
+
+  fetchingData(refreshing = false) {
+    this.props.actions.fetchHeroRanking(
+      this.props.navigation.state.params.heroId,
+      refreshing
+    );
   }
 
   getGetOrdinal(n) {
@@ -105,7 +113,7 @@ class HeroRankings extends Component {
 
   render() {
     const styles = this.props.style;
-    const { isLoadingHeroRanking } = this.props;
+    const { isLoadingHeroRanking, isRefreshingHeroRanking } = this.props;
 
     let content = <View styleName="fill-parent dota2" />;
 
@@ -146,6 +154,8 @@ class HeroRankings extends Component {
               data={rankingData}
               renderItem={this.renderItem}
               getItemLayout={this.getItemLayout}
+              refreshing={isRefreshingHeroRanking}
+              onRefresh={this.onRefreshing}
               keyExtractor={this.keyExtractor}
               initialNumToRender={10}
             />
@@ -184,7 +194,7 @@ const styles = {
 
 function mapStateToProps(state) {
   return {
-    heroId: state.heroOverviewState.heroId,
+    isRefreshingHeroRanking: state.heroRankingState.isRefreshingHeroRanking,
     isLoadingHeroRanking: state.heroRankingState.isLoadingHeroRanking,
     isEmptyHeroRanking: state.heroRankingState.isEmptyHeroRanking,
     heroRanking: state.heroRankingState.heroRanking

@@ -8,6 +8,12 @@ function requestKillsRecord() {
   };
 }
 
+function refreshingKillsRecord() {
+  return {
+    type: ActionTypes.REFRESHING_KILLS_RECORD
+  };
+}
+
 function receiveKillsRecord(killsRecords) {
   return {
     type: ActionTypes.RECEIVE_KILLS_RECORD,
@@ -21,10 +27,14 @@ function receiveEmptyKillsRecord() {
   };
 }
 
-export function fetchKillsRecord() {
+export function fetchKillsRecord(refreshing = false) {
   var endpoint = "records/kills";
   return dispatch => {
-    dispatch(requestKillsRecord());
+    if (refreshing) {
+      dispatch(refreshingKillsRecord());
+    } else {
+      dispatch(requestKillsRecord());
+    }
 
     var jsonData;
     return fetchAPI(endpoint)

@@ -8,6 +8,12 @@ function requestHighMMRMatchDetails() {
   };
 }
 
+function refreshingHighMMRMatchDetails() {
+  return {
+    type: ActionTypes.REFRESHING_HIGHMMR_MATCH_DETAILS
+  };
+}
+
 function receiveHighMMRMatchDetails(highMMRMatches) {
   return {
     type: ActionTypes.RECEIVE_HIGHMMR_MATCH_DETAILS,
@@ -22,10 +28,14 @@ function receiveEmptyHighMMRMatchDetails() {
 }
 
 //https://api.opendota.com/api/publicMatches?mmr_descending=1
-export function fetchHighMMRMatches() {
+export function fetchHighMMRMatches(refreshing = false) {
   var endpoint = "publicMatches?mmr_descending=1";
   return dispatch => {
-    dispatch(requestHighMMRMatchDetails());
+    if (refreshing) {
+      dispatch(refreshingHighMMRMatchDetails());
+    } else {
+      dispatch(requestHighMMRMatchDetails());
+    }
 
     var jsonData;
     return fetchAPI(endpoint)

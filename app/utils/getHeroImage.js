@@ -231,7 +231,7 @@ export function getHeroImage(id) {
     } else if (id == 120) {
         staticImage = require('../assets/heroes/pangolier_full.png');
     } else {
-        staticImage = require('../assets/no-item.png');
+        staticImage = require('../assets/dota_2_icon.png');
     }
     return staticImage;
 }

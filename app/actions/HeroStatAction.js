@@ -8,6 +8,12 @@ function requestHeroStats() {
   };
 }
 
+function refreshingHeroStats() {
+  return {
+    type: ActionTypes.REFRESHING_HERO_STATS
+  };
+}
+
 function receiveHeroStats(heroStats) {
   return {
     type: ActionTypes.RECEIVE_HERO_STATS,
@@ -21,10 +27,14 @@ function receiveEmptyHeroStats() {
   };
 }
 
-export function fetchHeroStats() {
+export function fetchHeroStats(refreshing = false) {
   var endpoint = "heroStats";
   return dispatch => {
-    dispatch(requestHeroStats());
+    if (refreshing) {
+      dispatch(refreshingHeroStats());
+    } else {
+      dispatch(requestHeroStats());
+    }
 
     var jsonData;
     return fetchAPI(endpoint)

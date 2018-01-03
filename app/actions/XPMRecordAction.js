@@ -8,6 +8,12 @@ function requestXPMRecord() {
   };
 }
 
+function refreshingXPMRecord() {
+  return {
+    type: ActionTypes.REFRESHING_XPM_RECORD
+  };
+}
+
 function receiveXPMRecord(xpmRecords) {
   return {
     type: ActionTypes.RECEIVE_XPM_RECORD,
@@ -21,10 +27,14 @@ function receiveEmptyXPMRecord() {
   };
 }
 
-export function fetchXPMRecord() {
+export function fetchXPMRecord(refreshing = false) {
   var endpoint = "records/xp_per_min";
   return dispatch => {
-    dispatch(requestXPMRecord());
+    if (refreshing) {
+      dispatch(refreshingXPMRecord());
+    } else {
+      dispatch(requestXPMRecord());
+    }
 
     var jsonData;
     return fetchAPI(endpoint)

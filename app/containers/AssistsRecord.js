@@ -32,17 +32,17 @@ class AssistsRecord extends Component {
 
     this.state = {
       assistsRecords: [],
-      refreshing: false,
       currentPageIndex: 0
     };
 
     this.renderItem = this.renderItem.bind(this);
-    this.onRefresh = this.onRefresh.bind(this);
     this.onPage = this.onPage.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
     this.renderHeader = this.renderHeader.bind(this);
     this.keyExtractor = this.keyExtractor.bind(this);
-
+    this.fetchingData = this.fetchingData.bind(this);
+    this.onRefreshing = this.fetchingData.bind(this, true);
+    this.getItemLayout = this.getItemLayout.bind(this);
   }
 
   componentWillMount() {}
@@ -54,8 +54,12 @@ class AssistsRecord extends Component {
     }
   }
 
+  fetchingData(isRefreshing = false) {
+    this.props.actions.fetchAssistsRecord(isRefreshing);
+  }
+
   componentDidMount() {
-    this.props.actions.fetchAssistsRecord();
+    this.fetchingData();
   }
 
   onPage(index) {
@@ -63,7 +67,13 @@ class AssistsRecord extends Component {
   }
 
   renderItem({ item, index }) {
-    return <RecordRow record={item} index={index} navigation={this.props.navigation}/>;
+    return (
+      <RecordRow
+        record={item}
+        index={index}
+        navigation={this.props.navigation}
+      />
+    );
   }
 
   getItemLayout(data, index) {
@@ -72,12 +82,6 @@ class AssistsRecord extends Component {
       length: RECORD_ROW_HEIGHT,
       index
     };
-  }
-
-  onRefresh() {
-    this.setState({
-      refreshing: true
-    });
   }
 
   keyExtractor(item, index) {
@@ -114,7 +118,7 @@ class AssistsRecord extends Component {
   }
 
   render() {
-    const { isLoadingAssistsRecord } = this.props;
+    const { isLoadingAssistsRecord, isRefreshingAssistsRecord } = this.props;
     const { assistsRecords, currentPageIndex } = this.state;
     const styles = this.props.style;
     let content = <View />;
@@ -125,10 +129,10 @@ class AssistsRecord extends Component {
       content = (
         <FlatList
           data={assistsRecords[currentPageIndex]}
+          refreshing={isRefreshingAssistsRecord}
+          onRefresh={this.onRefreshing}
           renderItem={this.renderItem}
           getItemLayout={this.getItemLayout}
-          //refreshing={this.state.refreshing}
-          //onRefresh={this.onRefresh}
           ListHeaderComponent={this.renderHeader}
           ListFooterComponent={this.renderFooter}
           keyExtractor={this.keyExtractor}
@@ -161,6 +165,8 @@ const styles = {
 
 function mapStateToProps(state) {
   return {
+    isRefreshingAssistsRecord:
+      state.assistsRecordState.isRefreshingAssistsRecord,
     isLoadingAssistsRecord: state.assistsRecordState.isLoadingAssistsRecord,
     isEmptyAssistsRecord: state.assistsRecordState.isEmptyAssistsRecord,
     assistsRecords: state.assistsRecordState.assistsRecords

@@ -20,6 +20,7 @@ import PercentStat from "../components/PercentStat";
 import Loading from "../components/Loading";
 import LiveGameRow from "../components/LiveGameRow";
 
+import _ from "lodash";
 import moment from "moment";
 import { bindActionCreators } from "redux";
 import { connectStyle } from "@shoutem/theme";
@@ -47,7 +48,10 @@ class Start extends Component {
 
     this.processTopLiveGameData = this.processTopLiveGameData.bind(this);
     this.normalizeGameMode = this.normalizeGameMode.bind(this);
+    this.fetchTopStreamer = this.fetchTopStreamer.bind(this);
     this.fetchTopLiveGame = this.fetchTopLiveGame.bind(this);
+    this.fetchingData = this.fetchingData.bind(this);
+    this.onRefreshing = this.fetchingData.bind(this, true);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -66,12 +70,20 @@ class Start extends Component {
   }
 
   componentDidMount() {
-    this.props.actions.fetchTopStreamer();
-    this.fetchTopLiveGame();
+    this.fetchingData();
   }
 
-  fetchTopLiveGame() {
-    this.props.actions.fetchTopLiveGame();
+  fetchTopStreamer(refreshing = false) {
+    this.props.actions.fetchTopStreamer(refreshing);
+  }
+
+  fetchTopLiveGame(refreshing = false) {
+    this.props.actions.fetchTopLiveGame(refreshing);
+  }
+
+  fetchingData(refreshing = false) {
+    this.fetchTopStreamer(refreshing);
+    this.fetchTopLiveGame(refreshing);
   }
 
   normalizeGameMode(gameMode) {
@@ -111,6 +123,9 @@ class Start extends Component {
         radiantPlayers: [],
         direPlayers: []
       };
+
+      processLiveGame.lobbyId = liveGame["lobby_id"];
+      processLiveGame.lastUpdateTime = liveGame["last_update_time"];
 
       if (liveGame["league_id"] != 0) {
         processLiveGame.leagueId = liveGame["league_id"];
@@ -210,14 +225,21 @@ class Start extends Component {
   render() {
     const styles = this.props.style;
     const { topStreamers, topLiveGames } = this.state;
-    const { isLoadingTopStreamer, isLoadingTopLiveGame } = this.props;
+    const {
+      isLoadingTopStreamer,
+      isLoadingTopLiveGame,
+      isRefreshingTopStreamer,
+      isRefreshingTopLiveGame
+    } = this.props;
+
+    const isRefreshing = isRefreshingTopLiveGame || isRefreshingTopStreamer;
 
     let topStreamer = <View />,
       topLiveGame = <View />;
 
     if (isLoadingTopStreamer) {
       topStreamer = <Loading type="Wave" />;
-    } else if (topStreamers.length > 0) {
+    } else if (!_.isEmpty(topStreamers) && topStreamers.length > 0) {
       topStreamer = topStreamers.map(stream => {
         //this is a workaround for: Cache never expires for the same uri on Image
         let url = stream.preview.large;
@@ -265,21 +287,27 @@ class Start extends Component {
 
     if (isLoadingTopLiveGame) {
       topLiveGame = <Loading type="Wave" />;
-    } else if (topLiveGames.length > 0) {
+    } else if (!_.isEmpty(topLiveGames) && topLiveGames.length > 0) {
       topLiveGame = topLiveGames.map((game, index) => {
-        return <LiveGameRow key={index} liveGame={game} index={index} />;
+        const key = "" + game.lobbyId + game.lastUpdateTime;
+        return <LiveGameRow key={key} liveGame={game} index={index} />;
       });
     }
     const fast = <View />;
     return (
       <View styleName="fill-parent dota2" style={styles.container}>
-        <ScrollView>
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={this.onRefreshing}
+            />
+          }
+        >
           <View style={{ flex: 1 }}>
             <SectionHeader
               title="Top Live Games"
               imgUrl={require("../assets/dota2.png")}
-              rightIcon="refresh"
-              rightIconOnPress={this.fetchTopLiveGame}
             />
             {topLiveGame}
           </View>
@@ -318,9 +346,12 @@ const styles = {
 
 function mapStateToProps(state) {
   return {
+    isRefreshingTopStreamer: state.topStreamerState.isRefreshingTopStreamer,
     isLoadingTopStreamer: state.topStreamerState.isLoadingTopStreamer,
-    isEmptyMatchDetails: state.topStreamerState.isEmptyTopStreamer,
+    isEmptyTopStreamer: state.topStreamerState.isEmptyTopStreamer,
     topStreamers: state.topStreamerState.topStreamers,
+
+    isRefreshingTopLiveGame: state.topLiveGameState.isRefreshingTopLiveGame,
     isLoadingTopLiveGame: state.topLiveGameState.isLoadingTopLiveGame,
     isEmptyTopLiveGame: state.topLiveGameState.isEmptyTopLiveGame,
     topLiveGames: state.topLiveGameState.topLiveGames

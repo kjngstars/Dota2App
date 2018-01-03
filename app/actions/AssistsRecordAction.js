@@ -8,6 +8,12 @@ function requestAssistsRecord() {
   };
 }
 
+function refreshingRequestAssistsRecord() {
+  return {
+    type: ActionTypes.REFRESHING_REQUEST_ASSISTS_RECORD
+  };
+}
+
 function receiveAssistsRecord(assistsRecords) {
   return {
     type: ActionTypes.RECEIVE_ASSISTS_RECORD,
@@ -21,10 +27,14 @@ function receiveEmptyAssistsRecord() {
   };
 }
 
-export function fetchAssistsRecord() {
+export function fetchAssistsRecord(isRefreshing = false) {
   var endpoint = "records/assists";
   return dispatch => {
-    dispatch(requestAssistsRecord());
+    if (isRefreshing) {
+      dispatch(refreshingRequestAssistsRecord());
+    } else {
+      dispatch(requestAssistsRecord());
+    }
 
     var jsonData;
     return fetchAPI(endpoint)

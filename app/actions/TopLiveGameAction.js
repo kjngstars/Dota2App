@@ -8,6 +8,12 @@ function requestTopLiveGame() {
   };
 }
 
+function refreshingTopLiveGame() {
+  return {
+    type: ActionTypes.REFRESHING_TOP_LIVE_GAME
+  };
+}
+
 function receiveTopLiveGame(topLiveGames) {
   return {
     type: ActionTypes.RECEIVE_TOP_LIVE_GAME,
@@ -21,10 +27,14 @@ function receiveEmptyTopLiveGame() {
   };
 }
 
-export function fetchTopLiveGame() {
+export function fetchTopLiveGame(refreshing = false) {
   var endpoint = "live";
   return dispatch => {
-    dispatch(requestTopLiveGame());
+    if (refreshing) {
+      dispatch(refreshingTopLiveGame());
+    } else {
+      dispatch(requestTopLiveGame());
+    }
 
     var jsonData;
     return fetchAPI(endpoint)

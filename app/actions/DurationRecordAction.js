@@ -8,6 +8,12 @@ function requestDurationRecord() {
   };
 }
 
+function refreshingDurationRecord() {
+  return {
+    type: ActionTypes.REFRESHING_DURATION_RECORD
+  };
+}
+
 function receiveDurationRecord(durationRecords) {
   return {
     type: ActionTypes.RECEIVE_DURATION_RECORD,
@@ -21,10 +27,14 @@ function receiveEmptyDurationRecord() {
   };
 }
 
-export function fetchDurationRecord() {
+export function fetchDurationRecord(refreshing = false) {
   var endpoint = "records/duration";
   return dispatch => {
-    dispatch(requestDurationRecord());
+    if (refreshing) {
+      dispatch(refreshingDurationRecord());
+    } else {
+      dispatch(requestDurationRecord());
+    }
 
     var jsonData;
     return fetchAPI(endpoint)

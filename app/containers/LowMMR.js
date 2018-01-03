@@ -28,18 +28,19 @@ class LowMMR extends Component {
 
     this.state = {
       lowMMRMatches: [],
-      refreshing: false,
       currentPageIndex: 0
     };
 
     this.renderItem = this.renderItem.bind(this);
-    this.onRefresh = this.onRefresh.bind(this);
+    this.fetchingData = this.fetchingData.bind(this);
+    this.onRefreshing = this.fetchingData.bind(this, true);
     this.normalizeGameMode = this.normalizeGameMode.bind(this);
     this.normalizeLobbyType = this.normalizeLobbyType.bind(this);
     this.onPage = this.onPage.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
     this.keyExtractor = this.keyExtractor.bind(this);
     this.onItemPress = this.onItemPress.bind(this);
+    this.getItemLayout = this.getItemLayout.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -58,7 +59,11 @@ class LowMMR extends Component {
   }
 
   componentDidMount() {
-    this.props.actions.fetchLowMMRMatches();
+    this.fetchingData();
+  }
+
+  fetchingData(refreshing = false) {
+    this.props.actions.fetchLowMMRMatches(refreshing);
   }
 
   normalizeGameMode(gameMode) {
@@ -179,9 +184,9 @@ class LowMMR extends Component {
   render() {
     const styles = this.props.style;
     const { navigation } = this.props;
-    const { isLoadingLowMMRMatches, lowMMRMatches } = this.props;
-    const { currentPageIndex } = this.state;
-    
+    const { isLoadingLowMMRMatches, isRefreshingLowMMRMatches } = this.props;
+    const { currentPageIndex, lowMMRMatches } = this.state;
+
     let content = <View />;
 
     if (isLoadingLowMMRMatches) {
@@ -193,8 +198,8 @@ class LowMMR extends Component {
           data={this.state.lowMMRMatches[currentPageIndex]}
           renderItem={this.renderItem}
           getItemLayout={this.getItemLayout}
-          refreshing={this.state.refreshing}
-          onRefresh={this.onRefresh}
+          refreshing={isRefreshingLowMMRMatches}
+          onRefresh={this.onRefreshing}
           ListFooterComponent={this.renderFooter}
           keyExtractor={this.keyExtractor}
           initialNumToRender={4}
@@ -220,6 +225,8 @@ const styles = {
 
 function mapStateToProps(state) {
   return {
+    isRefreshingLowMMRMatches:
+      state.lowMMRMatchesState.isRefreshingLowMMRMatches,
     isLoadingLowMMRMatches: state.lowMMRMatchesState.isLoadingLowMMRMatches,
     isEmptyLowMMRMatches: state.lowMMRMatchesState.isEmptyLowMMRMatches,
     lowMMRMatches: state.lowMMRMatchesState.lowMMRMatches

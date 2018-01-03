@@ -32,16 +32,17 @@ class DeathsRecord extends Component {
 
     this.state = {
       deathsRecords: [],
-      refreshing: false,
       currentPageIndex: 0
     };
 
     this.renderItem = this.renderItem.bind(this);
-    this.onRefresh = this.onRefresh.bind(this);
     this.onPage = this.onPage.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
     this.renderHeader = this.renderHeader.bind(this);
     this.keyExtractor = this.keyExtractor.bind(this);
+    this.getItemLayout = this.getItemLayout.bind(this);
+    this.fetchingData = this.fetchingData.bind(this);
+    this.onRefreshing = this.fetchingData.bind(this, true);
   }
 
   componentWillMount() {}
@@ -54,7 +55,11 @@ class DeathsRecord extends Component {
   }
 
   componentDidMount() {
-    this.props.actions.fetchDeathsRecord();
+    this.fetchingData();
+  }
+
+  fetchingData(refreshing = false) {
+    this.props.actions.fetchDeathsRecord(refreshing);
   }
 
   onPage(index) {
@@ -62,7 +67,13 @@ class DeathsRecord extends Component {
   }
 
   renderItem({ item, index }) {
-    return <RecordRow record={item} index={index} navigation={this.props.navigation}/>;
+    return (
+      <RecordRow
+        record={item}
+        index={index}
+        navigation={this.props.navigation}
+      />
+    );
   }
 
   getItemLayout(data, index) {
@@ -71,12 +82,6 @@ class DeathsRecord extends Component {
       length: RECORD_ROW_HEIGHT,
       index
     };
-  }
-
-  onRefresh() {
-    this.setState({
-      refreshing: true
-    });
   }
 
   keyExtractor(item, index) {
@@ -113,7 +118,7 @@ class DeathsRecord extends Component {
   }
 
   render() {
-    const { isLoadingDeathsRecord } = this.props;
+    const { isLoadingDeathsRecord, isRefreshingDeathsRecord } = this.props;
     const { deathsRecords, currentPageIndex } = this.state;
     const styles = this.props.style;
     let content = <View />;
@@ -126,8 +131,8 @@ class DeathsRecord extends Component {
           data={deathsRecords[currentPageIndex]}
           renderItem={this.renderItem}
           getItemLayout={this.getItemLayout}
-          //refreshing={this.state.refreshing}
-          //onRefresh={this.onRefresh}
+          refreshing={isRefreshingDeathsRecord}
+          onRefresh={this.onRefreshing}
           ListHeaderComponent={this.renderHeader}
           ListFooterComponent={this.renderFooter}
           keyExtractor={this.keyExtractor}
@@ -160,6 +165,7 @@ const styles = {
 
 function mapStateToProps(state) {
   return {
+    isRefreshingDeathsRecord: state.deathsRecordState.isRefreshingDeathsRecord,
     isLoadingDeathsRecord: state.deathsRecordState.isLoadingDeathsRecord,
     isEmptyDeathsRecord: state.deathsRecordState.isEmptyDeathsRecord,
     deathsRecords: state.deathsRecordState.deathsRecords

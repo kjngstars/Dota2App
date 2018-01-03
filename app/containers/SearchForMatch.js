@@ -13,6 +13,7 @@ import Spinner from "react-native-spinkit";
 import LeftHeader from "../components/LeftHeader";
 import { Keyboard } from "react-native";
 import { fetchMatchDetails } from "../actions/MatchDetailsAction";
+import themeColors from "../themes/colors";
 
 class SearchForMatch extends Component {
   constructor(props) {
@@ -20,7 +21,7 @@ class SearchForMatch extends Component {
 
     this.state = {
       matchId: "",
-      isWrongMatchId: false
+      isWrongMatchId: false      
     };
 
     this.goToMatchDetailsScreen = this.goToMatchDetailsScreen.bind(this);
@@ -31,7 +32,7 @@ class SearchForMatch extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (this.props != nextProps) {
-      if (nextProps.matchDetails.error) {
+      if (nextProps.isEmptyMatchDetails) {
         this.setState({ isWrongMatchId: true });
       } else {
         this.setState({ isWrongMatchId: false });
@@ -67,12 +68,12 @@ class SearchForMatch extends Component {
   render() {
     const { navigation } = this.props;
     const styles = this.props.style;
-    const { isLoadingMatchDetails } = this.props;
+    const { isLoadingMatchDetails, isEmptyMatchDetails } = this.props;
 
     let content = <View />;
     let error = <View />;
 
-    if (!isLoadingMatchDetails && this.state.isWrongMatchId) {
+    if (!isLoadingMatchDetails && isEmptyMatchDetails) {
       error = (
         <View
           styleName="horizontal h-start v-center md-gutter"
@@ -84,10 +85,10 @@ class SearchForMatch extends Component {
             style={{ color: "#fff", fontSize: 50 }}
           />
           <Title
-            style={{ color: "#6BF", fontSize: 23 }}
+            style={{ color: themeColors.orange, fontSize: 23 }}
             styleName="md-gutter-left"
           >
-            Can't find match data, {"\n"}please try again!
+            Can't find match data, please try again!
           </Title>
         </View>
       );
@@ -147,7 +148,7 @@ function mapStateToProps(state) {
   return {
     isLoadingMatchDetails: state.matchDetailsState.isLoadingMatchDetails,
     matchDetails: state.matchDetailsState.matchDetails,
-    stackCounts: state.nav.routes[0].routes[0].routes.length + 1
+    isEmptyMatchDetails: state.matchDetailsState.isEmptyMatchDetails    
   };
 }
 

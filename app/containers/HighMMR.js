@@ -28,18 +28,19 @@ class HighMMR extends Component {
 
     this.state = {
       highMMRMatches: [],
-      refreshing: false,
       currentPageIndex: 0
     };
 
     this.renderItem = this.renderItem.bind(this);
-    this.onRefresh = this.onRefresh.bind(this);
+    this.fetchingData = this.fetchingData.bind(this);
+    this.onRefreshing = this.fetchingData.bind(this, true);
     this.normalizeGameMode = this.normalizeGameMode.bind(this);
     this.normalizeLobbyType = this.normalizeLobbyType.bind(this);
     this.onPage = this.onPage.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
     this.keyExtractor = this.keyExtractor.bind(this);
     this.onItemPress = this.onItemPress.bind(this);
+    this.getItemLayout = this.getItemLayout.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -58,7 +59,11 @@ class HighMMR extends Component {
   }
 
   componentDidMount() {
-    this.props.actions.fetchHighMMRMatches();
+    this.fetchingData();
+  }
+
+  fetchingData(onRefresh = false) {
+    this.props.actions.fetchHighMMRMatches(onRefresh);
   }
 
   normalizeGameMode(gameMode) {
@@ -179,8 +184,11 @@ class HighMMR extends Component {
   render() {
     const styles = this.props.style;
     const { navigation } = this.props;
-    const { isLoadingHighMMRMatches, highMMRMatches } = this.props;
-    const { currentPageIndex } = this.state;
+    const {
+      isLoadingHighMMRMatches,
+      isRefreshingHighMMRMatches,      
+    } = this.props;
+    const { currentPageIndex, highMMRMatches } = this.state;
 
     let content = <View />;
 
@@ -193,8 +201,8 @@ class HighMMR extends Component {
           data={this.state.highMMRMatches[currentPageIndex]}
           renderItem={this.renderItem}
           getItemLayout={this.getItemLayout}
-          refreshing={this.state.refreshing}
-          onRefresh={this.onRefresh}
+          refreshing={isRefreshingHighMMRMatches}
+          onRefresh={this.onRefreshing}
           ListFooterComponent={this.renderFooter}
           keyExtractor={this.keyExtractor}
           initialNumToRender={4}
@@ -220,6 +228,8 @@ const styles = {
 
 function mapStateToProps(state) {
   return {
+    isRefreshingHighMMRMatches:
+      state.highMMRMatchesState.isRefreshingHighMMRMatches,
     isLoadingHighMMRMatches: state.highMMRMatchesState.isLoadingHighMMRMatches,
     isEmptyHighMMRMatches: state.highMMRMatchesState.isEmptyHighMMRMatches,
     highMMRMatches: state.highMMRMatchesState.highMMRMatches

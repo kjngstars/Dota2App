@@ -11,6 +11,7 @@ import Loading from "../components/Loading";
 import { Pages } from "react-native-pages";
 import ModalDropdown from "react-native-modal-dropdown";
 import Line from "../components/Line";
+import SortableHeaderItem from "../components/SortableHeaderItem";
 
 import { createGroupedArray, round } from "../utils/utilsFunction";
 import * as heroStatActions from "../actions/HeroStatAction";
@@ -35,7 +36,6 @@ class HeroStatPublic extends Component {
       totalPulicMatches: "",
       selectedRankIndex: 6,
       currentPageIndex: 0,
-      refreshing: false,
       sortedColumn: "id",
       ascending: true,
       ranks: [
@@ -74,11 +74,18 @@ class HeroStatPublic extends Component {
           value: 7,
           imgUrl: require("../assets/rank_icons/rank_icon_7.png")
         }
+      ],
+      headers: [
+        { title: "HERO", value: "name" },
+        { title: "PICK%", value: "pick" },
+        { title: "WIN%", value: "win" }
       ]
     };
 
     this.renderItem = this.renderItem.bind(this);
-    this.onRefresh = this.onRefresh.bind(this);
+    this.renderHeader = this.renderHeader.bind(this);
+    this.fetchingData = this.fetchingData.bind(this);
+    this.onRefreshing = this.fetchingData.bind(this, true);
     this.getItemLayout = this.getItemLayout.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
     this.keyExtractor = this.keyExtractor.bind(this);
@@ -93,7 +100,10 @@ class HeroStatPublic extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.heroStats != nextProps.heroStats) {
+    if (
+      this.props.heroStats != nextProps.heroStats &&
+      nextProps.heroStats.length > 0
+    ) {
       const matchCounts = this.calculateTotalPublicMatches(nextProps.heroStats);
       const heroStats = this.processHeroStatsPublicMatch(
         nextProps.heroStats,
@@ -114,6 +124,10 @@ class HeroStatPublic extends Component {
   }
 
   componentDidMount() {}
+
+  fetchingData(refreshing = false) {
+    this.props.actions.fetchHeroStats(refreshing);
+  }
 
   calculateTotalPublicMatches(heroStats) {
     let totalPulicMatchesForEachRank = [];
@@ -308,6 +322,94 @@ class HeroStatPublic extends Component {
     );
   }
 
+  renderHeader() {
+    const styles = this.props.style;
+    const { isLoadingHeroStats, heroStats, isRefreshingHeroStats } = this.props;
+    const {
+      selectedRankIndex,
+      ranks,
+      totalPulicMatches,
+      headers,
+      sortedColumn,
+      ascending
+    } = this.state;
+
+    return (
+      <View styleName="vertical h-center v-center">
+        <View styleName="vertical v-center h-center" style={{ flex: 1 }}>
+          <Text style={{ color: themeColors.orange }}>
+            {totalPulicMatches} matches in last 30 days
+          </Text>
+          <Line />
+        </View>
+        <ModalDropdown
+          style={{ flex: 1 }}
+          options={ranks}
+          renderRow={this.renderRowDropdown}
+          onSelect={this.onOptionSelected}
+          renderSeparator={this.renderSeparatorDropdown}
+          dropdownStyle={{
+            borderWidth: 1,
+            borderColor: "rgba(46, 47, 64, 0.6)"
+          }}
+        >
+          <View styleName="horizontal h-center v-center">
+            <Icon name="drop-down" style={{ color: "#fff" }} />
+            <Text style={{ color: "#fff", marginLeft: 5, marginRight: 5 }}>
+              Stats for rank: {ranks[selectedRankIndex].name}
+            </Text>
+            <Image
+              source={ranks[selectedRankIndex].imgUrl}
+              styleName="small-avatar"
+            />
+          </View>
+        </ModalDropdown>
+        <View style={styles.header}>
+          {headers.map(header => {
+            let asc = false;
+            let first = true;
+            if (header.value == sortedColumn) {
+              asc = ascending;
+              first = false;
+            }
+
+            if (header.value == "name") {
+              return (
+                <SortableHeaderItem
+                  key={header.value}
+                  title={header.title}
+                  onSorting={this.sortHero}
+                  first={first}
+                  ascending={asc}
+                />
+              );
+            } else if (header.value == "pick") {
+              return (
+                <SortableHeaderItem
+                  key={header.value}
+                  title={header.title}
+                  onSorting={this.sortPick}
+                  first={first}
+                  ascending={asc}
+                />
+              );
+            } else if (header.value == "win") {
+              return (
+                <SortableHeaderItem
+                  key={header.value}
+                  title={header.title}
+                  onSorting={this.sortWin}
+                  first={first}
+                  ascending={asc}
+                />
+              );
+            }
+          })}
+        </View>
+      </View>
+    );
+  }
+
   getItemLayout(data, index) {
     return {
       offset: HERO_STAT_ROW_HEIGHT * index,
@@ -337,7 +439,7 @@ class HeroStatPublic extends Component {
   }
 
   keyExtractor(item, index) {
-    return item.heroName;
+    return "" + item.id + item.heroName;
   }
 
   onOptionSelected(index, value) {
@@ -456,15 +558,15 @@ class HeroStatPublic extends Component {
 
       this.setState({
         sortedColumn: column,
-        groupedHeroStats
+        groupedHeroStats,
+        ascending: isAscending
       });
     }
   }
 
   render() {
     const styles = this.props.style;
-    const { navigation } = this.props;
-    const { isLoadingHeroStats, heroStats } = this.props;
+    const { isLoadingHeroStats, heroStats, isRefreshingHeroStats } = this.props;
     const {
       currentPageIndex,
       selectedRankIndex,
@@ -484,69 +586,25 @@ class HeroStatPublic extends Component {
       );
     } else if (groupedHeroStats.length > 0) {
       content = (
-        <ScrollView styleName="fill-parent" style={styles.container}>
-          <View styleName="vertical h-center v-center">
-            <View styleName="vertical v-center h-center" style={{ flex: 1 }}>
-              <Text style={{ color: "#fff" }}>
-                {totalPulicMatches} matches in last 30 days
-              </Text>
-              <Line />
-            </View>
-            <ModalDropdown
-              style={{ flex: 1 }}
-              options={ranks}
-              renderRow={this.renderRowDropdown}
-              onSelect={this.onOptionSelected}
-              renderSeparator={this.renderSeparatorDropdown}
-              dropdownStyle={{
-                borderWidth: 1,
-                borderColor: "rgba(46, 47, 64, 0.6)"
-              }}
-            >
-              <View styleName="horizontal h-center v-center">
-                <Icon name="drop-down" style={{ color: "#fff" }} />
-                <Text style={{ color: "#fff", marginLeft: 5, marginRight: 5 }}>
-                  Stats for rank: {ranks[selectedRankIndex].name}
-                </Text>
-                <Image
-                  source={ranks[selectedRankIndex].imgUrl}
-                  styleName="small-avatar"
-                />
-              </View>
-            </ModalDropdown>
-          </View>
-          <View style={{ flex: 1, height: screenHeight, paddingBottom: 10 }}>
-            <View style={styles.header}>
-              <View style={{ flex: 1 }}>
-                <TouchableOpacity onPress={this.sortHero}>
-                  <Text style={{ color: "#fff", marginRight: 5 }}>HERO</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={{ flex: 1 }}>
-                <TouchableOpacity onPress={this.sortPick}>
-                  <Text style={{ color: "#fff", marginRight: 5 }}>PICK%</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={{ flex: 1 }}>
-                <TouchableOpacity onPress={this.sortWin}>
-                  <Text style={{ color: "#fff", marginRight: 5 }}>WIN%</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-            <FlatList
-              data={groupedHeroStats[selectedRankIndex][currentPageIndex]}
-              renderItem={this.renderItem}
-              getItemLayout={this.getItemLayout}
-              ListFooterComponent={this.renderFooter}
-              keyExtractor={this.keyExtractor}
-              initialNumToRender={10}
-            />
-          </View>
-        </ScrollView>
+        <FlatList
+          data={groupedHeroStats[selectedRankIndex][currentPageIndex]}
+          renderItem={this.renderItem}
+          getItemLayout={this.getItemLayout}
+          ListHeaderComponent={this.renderHeader}
+          ListFooterComponent={this.renderFooter}
+          keyExtractor={this.keyExtractor}
+          initialNumToRender={10}
+          refreshing={isRefreshingHeroStats}
+          onRefresh={this.onRefreshing}
+        />
       );
     }
 
-    return content;
+    return (
+      <View styleName="fill-parent dota2" style={styles.container}>
+        {content}
+      </View>
+    );
   }
 }
 
@@ -557,10 +615,10 @@ HeroStatPublic.navigationOptions = {
 
 const styles = {
   container: {
+    paddingBottom: 10,
     paddingTop: 10,
     paddingLeft: 15,
-    paddingRight: 15,
-    backgroundColor: "#2e2d45"
+    paddingRight: 15
   },
   header: {
     flex: 1,
@@ -568,13 +626,14 @@ const styles = {
     paddingRight: 5,
     flexDirection: "row",
     alignItems: "center",
-    maxHeight: 40,
+    height: 40,
     backgroundColor: "rgba(0,0,0,0.3)"
   }
 };
 
 function mapStateToProps(state) {
   return {
+    isRefreshingHeroStats: state.heroStatsState.isRefreshingHeroStats,
     isLoadingHeroStats: state.heroStatsState.isLoadingHeroStats,
     isEmptyHeroStats: state.heroStatsState.isEmptyHeroStats,
     heroStats: state.heroStatsState.heroStats

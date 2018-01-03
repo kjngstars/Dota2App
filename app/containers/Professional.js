@@ -15,6 +15,8 @@ import Spinner from "react-native-spinkit";
 import { createGroupedArray } from "../utils/utilsFunction";
 import Pagination from "../components/Pagination";
 import { navigateToMenuScreen } from "../actions/NavigationAction";
+import Loading from "../components/Loading";
+import _ from "lodash";
 
 class Professional extends Component {
   constructor(props) {
@@ -22,27 +24,30 @@ class Professional extends Component {
 
     this.state = {
       proMatches: [],
-      refreshing: false,
       currentPageIndex: 0
     };
 
     this.renderItem = this.renderItem.bind(this);
-    this.onRefresh = this.onRefresh.bind(this);
     this.onPage = this.onPage.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
     this.keyExtractor = this.keyExtractor.bind(this);
     this.onItemPress = this.onItemPress.bind(this);
+    this.getItemLayout = this.getItemLayout.bind(this);
+    this.fetchingData = this.fetchingData.bind(this);
+    this.onRefreshing = this.fetchingData.bind(this, true);
   }
 
   componentDidMount() {
-    this.fetchProMatches();
+    this.fetchingData();
+  }
+
+  fetchingData(refreshing = false) {
+    this.props.actions.fetchProMatches(refreshing);
   }
 
   componentWillReceiveProps(nextProps) {
-    //console.log('componentWillReceiveProps ' + this.state.proMatches.length);
     const { proMatches } = this.props;
     if (proMatches != nextProps.proMatches && nextProps.proMatches.length > 0) {
-      //console.log('componentWillReceiveProps professional');
       let processedMatches = this.processProMatchesData(nextProps.proMatches);
 
       let proMatches = createGroupedArray(processedMatches, 10);
@@ -90,7 +95,13 @@ class Professional extends Component {
   }
 
   renderItem({ item, index }) {
-    return <ProMatchRow match={item} index={index} onPress={()=>this.onItemPress(item.matchId)}/>;
+    return (
+      <ProMatchRow
+        match={item}
+        index={index}
+        onPress={() => this.onItemPress(item.matchId)}
+      />
+    );
   }
 
   getItemLayout(data, index) {
@@ -99,16 +110,6 @@ class Professional extends Component {
       length: PRO_MATCH_ROW_HEIGHT,
       index
     };
-  }
-
-  onRefresh() {
-    this.setState({
-      refreshing: true
-    });
-  }
-
-  fetchProMatches() {
-    this.props.actions.fetchProMatches();
   }
 
   renderFooter() {
@@ -132,37 +133,25 @@ class Professional extends Component {
   render() {
     const styles = this.props.style;
     const { navigation } = this.props;
-    const { isLoadingProMatches, proMatches } = this.props;
-    const { currentPageIndex } = this.state;
+    const {
+      isLoadingProMatches,
+      isRefreshingProMatches,      
+    } = this.props;
+    const { currentPageIndex, proMatches } = this.state;
 
     let content = <View />;
 
     if (isLoadingProMatches) {
-      content = (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center"
-          }}
-        >
-          <Spinner
-            //style={styles.spinner}
-            size={45}
-            type="9CubeGrid"
-            color="#fff"
-          />
-        </View>
-      );
+      content = <Loading />;
     } else if (proMatches.length > 0) {
       content = (
         <FlatList
           style={styles.container}
           data={this.state.proMatches[currentPageIndex]}
+          refreshing={isRefreshingProMatches}
+          onRefresh={this.onRefreshing}
           renderItem={this.renderItem}
           getItemLayout={this.getItemLayout}
-          refreshing={this.state.refreshing}
-          onRefresh={this.onRefresh}
           ListFooterComponent={this.renderFooter}
           keyExtractor={this.keyExtractor}
           initialNumToRender={5}
@@ -192,6 +181,7 @@ const styles = {
 
 function mapStateToProps(state) {
   return {
+    isRefreshingProMatches: state.proMatchesState.isRefreshingProMatches,
     isLoadingProMatches: state.proMatchesState.isLoadingProMatches,
     isEmptyProMatches: state.proMatchesState.isEmptyProMatches,
     proMatches: state.proMatchesState.proMatches

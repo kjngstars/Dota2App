@@ -8,6 +8,12 @@ function requestGPMRecord() {
   };
 }
 
+function refreshingGPMRecord() {
+  return {
+    type: ActionTypes.REFRESHING_GPM_RECORD
+  };
+}
+
 function receiveGPMRecord(gpmRecords) {
   return {
     type: ActionTypes.RECEIVE_GPM_RECORD,
@@ -21,10 +27,14 @@ function receiveEmptyGPMRecord() {
   };
 }
 
-export function fetchGPMRecord() {
+export function fetchGPMRecord(refreshing = false) {
   var endpoint = "records/gold_per_min";
   return dispatch => {
-    dispatch(requestGPMRecord());
+    if (refreshing) {
+      dispatch(refreshingGPMRecord());
+    } else {
+      dispatch(requestGPMRecord());
+    }
 
     var jsonData;
     return fetchAPI(endpoint)

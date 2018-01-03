@@ -30,16 +30,17 @@ class DurationRecord extends Component {
 
     this.state = {
       durationRecords: [],
-      refreshing: false,
       currentPageIndex: 0
     };
 
     this.renderItem = this.renderItem.bind(this);
-    this.onRefresh = this.onRefresh.bind(this);
+    this.onRefreshing = this.fetchingData.bind(this, true);
+    this.fetchingData = this.fetchingData.bind(this);
     this.onPage = this.onPage.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
     this.renderHeader = this.renderHeader.bind(this);
     this.keyExtractor = this.keyExtractor.bind(this);
+    this.getItemLayout =this.getItemLayout.bind(this);
   }
 
   componentWillMount() {}
@@ -52,7 +53,7 @@ class DurationRecord extends Component {
   }
 
   componentDidMount() {
-    this.props.actions.fetchDurationRecord();
+    this.fetchingData();
   }
 
   processDurationRecord(durationRecords) {
@@ -87,18 +88,16 @@ class DurationRecord extends Component {
     return <RecordRow record={item} index={index} navigation={this.props.navigation}/>;
   }
 
+  fetchingData(refreshing = false){
+    this.props.actions.fetchDurationRecord(refreshing);
+  }
+
   getItemLayout(data, index) {
     return {
       offset: RECORD_ROW_HEIGHT * index,
       length: RECORD_ROW_HEIGHT,
       index
     };
-  }
-
-  onRefresh() {
-    this.setState({
-      refreshing: true
-    });
   }
 
   keyExtractor(item, index) {
@@ -144,7 +143,7 @@ class DurationRecord extends Component {
   }
 
   render() {
-    const { isLoadingDurationRecord } = this.props;
+    const { isLoadingDurationRecord, isRefreshingDurationRecord } = this.props;
     const { durationRecords, currentPageIndex } = this.state;
     const styles = this.props.style;
     let content = <View />;
@@ -157,8 +156,8 @@ class DurationRecord extends Component {
           data={durationRecords[currentPageIndex]}
           renderItem={this.renderItem}
           getItemLayout={this.getItemLayout}
-          //refreshing={this.state.refreshing}
-          //onRefresh={this.onRefresh}
+          refreshing={isRefreshingDurationRecord}
+          onRefresh={this.onRefreshing}
           ListHeaderComponent={this.renderHeader}
           ListFooterComponent={this.renderFooter}
           keyExtractor={this.keyExtractor}
@@ -197,6 +196,7 @@ const styles = {
 
 function mapStateToProps(state) {
   return {
+    isRefreshingDurationRecord: state.durationRecordsState.isRefreshingDurationRecord,
     isLoadingDurationRecord: state.durationRecordsState.isLoadingDurationRecord,
     isEmptyDurationRecord: state.durationRecordsState.isEmptyDurationRecord,
     durationRecords: state.durationRecordsState.durationRecords

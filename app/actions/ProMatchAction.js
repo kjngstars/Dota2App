@@ -8,6 +8,12 @@ function requestProMatchDetails() {
   };
 }
 
+function refreshingProMatchDetails() {
+  return {
+    type: ActionTypes.REFRESHING_PROMATCH_DETAILS
+  };
+}
+
 function receiveProMatchDetails(proMatches) {
   return {
     type: ActionTypes.RECEIVE_PROMATCH_DETAILS,
@@ -22,10 +28,14 @@ function receiveEmptyProMatchDetails() {
 }
 
 //https://api.opendota.com/api/proMatches
-export function fetchProMatches() {
+export function fetchProMatches(refreshing = false) {
   var endpoint = "proMatches";
   return dispatch => {
-    dispatch(requestProMatchDetails());
+    if (refreshing) {
+      dispatch(refreshingProMatchDetails());
+    } else {
+      dispatch(requestProMatchDetails());
+    }
 
     var jsonData;
     return fetchAPI(endpoint)

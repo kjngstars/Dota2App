@@ -8,6 +8,12 @@ function requestDeathsRecord() {
   };
 }
 
+function refreshingDeathsRecord() {
+  return {
+    type: ActionTypes.REFRESHING_DEATHS_RECORD
+  };
+}
+
 function receiveDeathsRecord(deathsRecords) {
   return {
     type: ActionTypes.RECEIVE_DEATHS_RECORD,
@@ -21,10 +27,14 @@ function receiveEmptyDeathsRecord() {
   };
 }
 
-export function fetchDeathsRecord() {
+export function fetchDeathsRecord(refreshing = false) {
   var endpoint = "records/deaths";
   return dispatch => {
-    dispatch(requestDeathsRecord());
+    if (refreshing) {
+      dispatch(refreshingDeathsRecord());
+    } else {
+      dispatch(requestDeathsRecord());
+    }
 
     var jsonData;
     return fetchAPI(endpoint)

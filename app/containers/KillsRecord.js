@@ -32,16 +32,17 @@ class KillsRecord extends Component {
 
     this.state = {
       killsRecords: [],
-      refreshing: false,
       currentPageIndex: 0
     };
 
     this.renderItem = this.renderItem.bind(this);
-    this.onRefresh = this.onRefresh.bind(this);
+    this.fetchingData = this.fetchingData.bind(this);
+    this.onRefreshing = this.fetchingData.bind(this, true);
     this.onPage = this.onPage.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
     this.renderHeader = this.renderHeader.bind(this);
     this.keyExtractor = this.keyExtractor.bind(this);
+    this.getItemLayout = this.getItemLayout.bind(this);
   }
 
   componentWillMount() {}
@@ -54,7 +55,11 @@ class KillsRecord extends Component {
   }
 
   componentDidMount() {
-    this.props.actions.fetchKillsRecord();
+    this.fetchingData();
+  }
+
+  fetchingData(refreshing = false) {
+    this.props.actions.fetchKillsRecord(refreshing);
   }
 
   onPage(index) {
@@ -77,12 +82,6 @@ class KillsRecord extends Component {
       length: RECORD_ROW_HEIGHT,
       index
     };
-  }
-
-  onRefresh() {
-    this.setState({
-      refreshing: true
-    });
   }
 
   keyExtractor(item, index) {
@@ -119,7 +118,7 @@ class KillsRecord extends Component {
   }
 
   render() {
-    const { isLoadingKillsRecord } = this.props;
+    const { isLoadingKillsRecord, isRefreshingKillsRecord } = this.props;
     const { killsRecords, currentPageIndex } = this.state;
     const styles = this.props.style;
     let content = <View />;
@@ -132,8 +131,8 @@ class KillsRecord extends Component {
           data={killsRecords[currentPageIndex]}
           renderItem={this.renderItem}
           getItemLayout={this.getItemLayout}
-          //refreshing={this.state.refreshing}
-          //onRefresh={this.onRefresh}
+          refreshing={isRefreshingKillsRecord}
+          onRefresh={this.onRefreshing}
           ListHeaderComponent={this.renderHeader}
           ListFooterComponent={this.renderFooter}
           keyExtractor={this.keyExtractor}
@@ -166,6 +165,7 @@ const styles = {
 
 function mapStateToProps(state) {
   return {
+    isRefreshingKillsRecord: state.killsRecordsState.isRefreshingKillsRecord,
     isLoadingKillsRecord: state.killsRecordsState.isLoadingKillsRecord,
     isEmptyKillsRecord: state.killsRecordsState.isEmptyKillsRecord,
     killsRecords: state.killsRecordsState.killsRecords

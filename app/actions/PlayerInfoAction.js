@@ -8,6 +8,12 @@ function requestPlayerInfo() {
   };
 }
 
+function refreshingPlayerInfo() {
+  return {
+    type: ActionTypes.REFRESHING_PLAYER_INFO
+  };
+}
+
 function receivePlayerInfo(playerInfo) {
   return {
     type: ActionTypes.RECEIVE_PLAYER_INFO,
@@ -21,14 +27,18 @@ function receiveEmptyPlayerInfo() {
   };
 }
 
-export function fetchPlayerInfo(accountId) {
+export function fetchPlayerInfo(accountId, refreshing = false) {
   var endpoint = "players/" + accountId;
   return dispatch => {
-    dispatch(requestPlayerInfo());
+    if (refreshing) {
+      dispatch(refreshingPlayerInfo());
+    } else {
+      dispatch(requestPlayerInfo());
+    }
 
     var jsonData;
     return fetchAPI(endpoint)
-      .then(json => {        
+      .then(json => {
         dispatch(receivePlayerInfo(json));
       })
       .catch(error => {

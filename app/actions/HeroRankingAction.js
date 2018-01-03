@@ -8,6 +8,12 @@ function requestHeroRanking() {
   };
 }
 
+function refreshingHeroRanking() {
+  return {
+    type: ActionTypes.REFRESHING_HERO_RANKING
+  };
+}
+
 function receiveHeroRanking(heroRanking) {
   return {
     type: ActionTypes.RECEIVE_HERO_RANKING,
@@ -21,10 +27,14 @@ function receiveEmptyHeroRanking() {
   };
 }
 
-export function fetchHeroRanking(heroId) {
+export function fetchHeroRanking(heroId, refreshing = false) {
   var endpoint = "rankings?hero_id=" + heroId;
   return dispatch => {
-    dispatch(requestHeroRanking());
+    if (refreshing) {
+      dispatch(refreshingHeroRanking());
+    } else {
+      dispatch(requestHeroRanking());
+    }
 
     var jsonData;
     return fetchAPI(endpoint)

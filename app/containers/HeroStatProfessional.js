@@ -8,6 +8,7 @@ import { Pages } from "react-native-pages";
 import HeroStatRowProMatch, {
   HERO_STAT_ROW_HEIGHT
 } from "../components/HeroStatRowProMatch";
+import SortableHeaderItem from "../components/SortableHeaderItem";
 
 import { createGroupedArray, round } from "../utils/utilsFunction";
 
@@ -31,14 +32,20 @@ class HeroStatProfessional extends Component {
       screenHeight,
       heroStats: [],
       totalProMatches: "",
-      refreshing: false,
       currentIndex: 0,
       sortedColumn: "id",
-      ascending: true
+      ascending: true,
+      headers: [
+        { title: "HERO", value: "name" },
+        { title: "PICK%", value: "pick" },
+        { title: "BAN%", value: "ban" },
+        { title: "WIN%", value: "win" }
+      ]
     };
 
     this.renderItem = this.renderItem.bind(this);
-    this.onRefresh = this.onRefresh.bind(this);
+    this.fetchingData = this.fetchingData.bind(this);
+    this.onRefreshing = this.fetchingData.bind(this, true);
     this.onPage = this.onPage.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
     this.keyExtractor = this.keyExtractor.bind(this);
@@ -47,10 +54,15 @@ class HeroStatProfessional extends Component {
     this.sortBan = this.sortStat.bind(this, "ban");
     this.sortWin = this.sortStat.bind(this, "win");
     this.onPressRow = this.onPressRow.bind(this);
+    this.getItemLayout = this.getItemLayout.bind(this);
+    this.renderHeader = this.renderHeader.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.heroStats != nextProps.heroStats) {
+    if (
+      this.props.heroStats != nextProps.heroStats &&
+      nextProps.heroStats.length > 0
+    ) {
       const matchCountPro = this.calculateTotalProMatches(nextProps.heroStats);
       const heroStats = this.processHeroStatsProMatch(
         nextProps.heroStats,
@@ -64,7 +76,11 @@ class HeroStatProfessional extends Component {
   }
 
   componentDidMount() {
-    this.props.actions.fetchHeroStats();
+    this.fetchingData();
+  }
+
+  fetchingData(refreshing = false) {
+    this.props.actions.fetchHeroStats(refreshing);
   }
 
   calculateTotalProMatches(heroStats) {
@@ -112,7 +128,7 @@ class HeroStatProfessional extends Component {
         : round(proWin / proPick * 100, 1);
 
       //hero data
-      processedStat.heroData.heroId = heroStat["id"];      
+      processedStat.heroData.heroId = heroStat["id"];
 
       processedData[i] = processedStat;
     }
@@ -169,7 +185,7 @@ class HeroStatProfessional extends Component {
   }
 
   keyExtractor(item, index) {
-    return item.id;
+    return "" + item.id + item.heroName;
   }
 
   sortByHeroName(a, b) {
@@ -242,15 +258,85 @@ class HeroStatProfessional extends Component {
 
       this.setState({
         sortedColumn: column,
-        heroStats
+        heroStats,
+        ascending: isAscending
       });
     }
   }
 
+  renderHeader() {
+    const styles = this.props.style;
+    const { headers, sortedColumn, ascending } = this.state;
+    return (
+      <View styleName="vertical h-center">
+        <Text
+          style={{
+            color: themeColors.orange,
+            alignSelf: "center",
+            marginBottom: 5
+          }}
+        >
+          {this.state.totalProMatches} matches in last 30 days
+        </Text>
+        <View style={styles.header}>
+          {headers.map(header => {
+            let asc = false;
+            let first = true;
+            if (header.value == sortedColumn) {
+              asc = ascending;
+              first = false;
+            }
+
+            if (header.value == "name") {
+              return (
+                <SortableHeaderItem
+                  key={header.value}
+                  title={header.title}
+                  onSorting={this.sortHero}
+                  first={first}
+                  ascending={asc}
+                />
+              );
+            } else if (header.value == "pick") {
+              return (
+                <SortableHeaderItem
+                  key={header.value}
+                  title={header.title}
+                  onSorting={this.sortPick}
+                  first={first}
+                  ascending={asc}
+                />
+              );
+            } else if (header.value == "ban") {
+              return (
+                <SortableHeaderItem
+                  key={header.value}
+                  title={header.title}
+                  onSorting={this.sortBan}
+                  first={first}
+                  ascending={asc}
+                />
+              );
+            } else if (header.value == "win") {
+              return (
+                <SortableHeaderItem
+                  key={header.value}
+                  title={header.title}
+                  onSorting={this.sortWin}
+                  first={first}
+                  ascending={asc}
+                />
+              );
+            }
+          })}
+        </View>
+      </View>
+    );
+  }
+
   render() {
     const styles = this.props.style;
-    const { navigation } = this.props;
-    const { isLoadingHeroStats } = this.props;
+    const { isLoadingHeroStats, isRefreshingHeroStats } = this.props;
     const {
       currentIndex,
       heroStats,
@@ -261,55 +347,28 @@ class HeroStatProfessional extends Component {
     let content = <View styleName="fill-parent dota2" />;
 
     if (isLoadingHeroStats) {
-      content = (
-        <View styleName="fill-parent dota2">
-          <Loading />
-        </View>
-      );
+      content = <Loading />;
     } else if (heroStats.length > 0) {
       content = (
-        <ScrollView style={styles.container}>
-          <Text style={{ color: "#fff", alignSelf: "center", marginBottom: 5 }}>
-            {totalProMatches} matches in last 30 days
-          </Text>
-          <View style={{ flex: 1, height: screenHeight, paddingBottom: 10 }}>
-            <View style={styles.header}>
-              <View style={{ flex: 1 }}>
-                <TouchableOpacity onPress={this.sortHero}>
-                  <Text style={{ color: "#fff", marginRight: 5 }}>HERO</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={{ flex: 1 }}>
-                <TouchableOpacity onPress={this.sortPick}>
-                  <Text style={{ color: "#fff", marginRight: 5 }}>PICK%</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={{ flex: 1 }}>
-                <TouchableOpacity onPress={this.sortBan}>
-                  <Text style={{ color: "#fff", marginRight: 5 }}>BAN%</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={{ flex: 1 }}>
-                <TouchableOpacity onPress={this.sortWin}>
-                  <Text style={{ color: "#fff", marginRight: 5 }}>WIN%</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            <FlatList
-              data={heroStats[currentIndex]}
-              renderItem={this.renderItem}
-              getItemLayout={this.getItemLayout}
-              ListFooterComponent={this.renderFooter}
-              keyExtractor={this.keyExtractor}
-              initialNumToRender={10}
-            />
-          </View>
-        </ScrollView>
+        <FlatList
+          data={heroStats[currentIndex]}
+          renderItem={this.renderItem}
+          getItemLayout={this.getItemLayout}
+          ListHeaderComponent={this.renderHeader}
+          ListFooterComponent={this.renderFooter}
+          keyExtractor={this.keyExtractor}
+          initialNumToRender={10}
+          refreshing={isRefreshingHeroStats}
+          onRefresh={this.onRefreshing}
+        />
       );
     }
 
-    return content;
+    return (
+      <View styleName="fill-parent dota2" style={styles.container}>
+        {content}
+      </View>
+    );
   }
 }
 
@@ -323,8 +382,7 @@ const styles = {
     paddingBottom: 10,
     paddingTop: 10,
     paddingLeft: 15,
-    paddingRight: 15,
-    backgroundColor: "#2e2d45"
+    paddingRight: 15
   },
   header: {
     flex: 1,
@@ -332,13 +390,14 @@ const styles = {
     paddingRight: 5,
     flexDirection: "row",
     alignItems: "center",
-    maxHeight: 40,
+    height: 40,
     backgroundColor: "rgba(0,0,0,0.3)"
   }
 };
 
 function mapStateToProps(state) {
   return {
+    isRefreshingHeroStats: state.heroStatsState.isRefreshingHeroStats,
     isLoadingHeroStats: state.heroStatsState.isLoadingHeroStats,
     isEmptyHeroStats: state.heroStatsState.isEmptyHeroStats,
     heroStats: state.heroStatsState.heroStats
@@ -347,8 +406,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators(heroStatActions, dispatch),
-    sendHeroData: heroData => dispatch(sendHeroData(heroData))
+    actions: bindActionCreators(heroStatActions, dispatch)
   };
 }
 

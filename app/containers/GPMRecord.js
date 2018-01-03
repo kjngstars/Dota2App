@@ -32,16 +32,17 @@ class GPMRecord extends Component {
 
     this.state = {
       gpmRecords: [],
-      refreshing: false,
       currentPageIndex: 0
     };
 
     this.renderItem = this.renderItem.bind(this);
-    this.onRefresh = this.onRefresh.bind(this);
+    this.onRefreshing = this.fetchingData.bind(this, true);
+    this.fetchingData = this.fetchingData.bind(this);
     this.onPage = this.onPage.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
     this.renderHeader = this.renderHeader.bind(this);
     this.keyExtractor = this.keyExtractor.bind(this);
+    this.getItemLayout = this.getItemLayout.bind(this);
   }
 
   componentWillMount() {}
@@ -54,11 +55,15 @@ class GPMRecord extends Component {
   }
 
   componentDidMount() {
-    this.props.actions.fetchGPMRecord();
+    this.fetchingData();
   }
 
   onPage(index) {
     this.setState({ currentPageIndex: index });
+  }
+
+  fetchingData(refreshing = false) {
+    this.props.actions.fetchGPMRecord(refreshing);
   }
 
   renderItem({ item, index }) {
@@ -119,7 +124,7 @@ class GPMRecord extends Component {
   }
 
   render() {
-    const { isLoadingGPMRecord } = this.props;
+    const { isLoadingGPMRecord, isRefreshingGPMRecord } = this.props;
     const { gpmRecords, currentPageIndex } = this.state;
     const styles = this.props.style;
     let content = <View />;
@@ -132,8 +137,8 @@ class GPMRecord extends Component {
           data={gpmRecords[currentPageIndex]}
           renderItem={this.renderItem}
           getItemLayout={this.getItemLayout}
-          //refreshing={this.state.refreshing}
-          //onRefresh={this.onRefresh}
+          refreshing={isRefreshingGPMRecord}
+          onRefresh={this.onRefreshing}
           ListHeaderComponent={this.renderHeader}
           ListFooterComponent={this.renderFooter}
           keyExtractor={this.keyExtractor}
@@ -166,6 +171,7 @@ const styles = {
 
 function mapStateToProps(state) {
   return {
+    isRefreshingGPMRecord: state.gpmRecordState.isRefreshingGPMRecord,
     isLoadingGPMRecord: state.gpmRecordState.isLoadingGPMRecord,
     isEmptyGPMRecord: state.gpmRecordState.isEmptyGPMRecord,
     gpmRecords: state.gpmRecordState.gpmRecords

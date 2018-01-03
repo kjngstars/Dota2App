@@ -8,6 +8,12 @@ function requestMatchDetails() {
   };
 }
 
+function refreshingMatchDetails() {
+  return {
+    type: ActionTypes.REFRESHING_MATCH_DETAILS
+  };
+}
+
 function receiveMatchDetails(matchDetails) {
   return {
     type: ActionTypes.RECEIVE_MATCH_DETAILS,
@@ -21,14 +27,19 @@ function receiveEmptyMatchDetails() {
   };
 }
 
-export function fetchMatchDetails(matchId) {
+export function fetchMatchDetails(matchId, refreshing = false) {
   var endpoint = "matches/" + matchId;
   return dispatch => {
-    dispatch(requestMatchDetails());
+    if (refreshing) {
+      dispatch(refreshingMatchDetails());
+    } else {
+      dispatch(requestMatchDetails());
+    }
 
     var jsonData;
     return fetchAPI(endpoint)
       .then(json => {
+        console.log("fuckign json : " + JSON.stringify(json));
         dispatch(receiveMatchDetails(json));
       })
       .catch(error => {

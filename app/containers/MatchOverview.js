@@ -161,7 +161,7 @@ const MatchRecap = ({ matchRecap, height }) => {
             color: themeColors.orange,
             fontSize: 13,
             marginTop: 10,
-            textAlign: "center",            
+            textAlign: "center"
           }}
         >
           The replay for this match has not yet been parsed. Not all data may be
@@ -204,11 +204,11 @@ class MatchOverview extends Component {
     this.calculateAverageMMR = this.calculateAverageMMR.bind(this);
     this.onRadiantRowPressed = this.onRadiantRowPressed.bind(this);
     this.onDireRowPressed = this.onDireRowPressed.bind(this);
-    // this.onNamePressed = this.onNamePressed.bind(this);
     this.normalizeGameMode = this.normalizeGameMode.bind(this);
-    //this.sortPlayers = this.sortPlayers.bind(this);
     this.renderSectionHeader = this.renderSectionHeader.bind(this);
     this.toggleAbilityPopup = this.toggleAbilityPopup.bind(this);
+    this.fetchingData = this.fetchingData.bind(this);
+    this.onRefreshing = this.fetchingData.bind(this, true);
 
     this.getItemLayout = sectionListGetItemLayout({
       getItemHeight: (rowData, sectionIndex, rowIndex) => {
@@ -258,9 +258,13 @@ class MatchOverview extends Component {
   }
 
   componentDidMount() {
+    this.fetchingData();
+  }
+
+  fetchingData(refreshing = false) {
     const { matchId } = this.props.navigation.state.params;
     if (matchId != 0) {
-      this.props.actions.fetchMatchDetails(matchId);
+      this.props.actions.fetchMatchDetails(matchId, refreshing);
     }
   }
 
@@ -499,8 +503,9 @@ class MatchOverview extends Component {
       processedPlayer.slot = i;
 
       //Ability Build
-      processedPlayer.abilityUpgrades =
-        currentUnprocessedPlayer.ability_upgrades_arr;
+      processedPlayer.abilityUpgrades = currentUnprocessedPlayer.ability_upgrades_arr
+        ? currentUnprocessedPlayer.ability_upgrades_arr
+        : [];
 
       //use as key for sectionlist item
       processedPlayer.key = currentUnprocessedPlayer.player_slot;
@@ -548,7 +553,7 @@ class MatchOverview extends Component {
     recap.direScore = data.dire_score;
     recap.radiantWin = data.radiant_win;
     recap.isWarning = data.radiant_gold_adv ? false : true;
-    
+
     if (data.duration && data.start_time) {
       var endedTime = (data.start_time + data.duration) * 1000;
       var now = moment();
@@ -985,7 +990,7 @@ class MatchOverview extends Component {
 
   render() {
     const styles = this.props.style;
-    const { navigation, isLoadingMatchDetails } = this.props;
+    const { isLoadingMatchDetails, isRefreshingMatchDetails } = this.props;
     const { sections } = this.state;
 
     let content = <View />;
@@ -999,6 +1004,8 @@ class MatchOverview extends Component {
           renderSectionHeader={this.renderSectionHeader}
           extraData={this.state.lastRowPressed}
           getItemLayout={this.getItemLayout}
+          refreshing={isRefreshingMatchDetails}
+          onRefresh={this.onRefreshing}
         />
       );
     }
@@ -1133,6 +1140,7 @@ const styles = {
 
 function mapStateToProps(state) {
   return {
+    isRefreshingMatchDetails: state.matchDetailsState.isRefreshingMatchDetails,
     matchDetails: state.matchDetailsState.matchDetails,
     isLoadingMatchDetails: state.matchDetailsState.isLoadingMatchDetails,
     isEmptyMatchDetails: state.matchDetailsState.isEmptyMatchDetails
