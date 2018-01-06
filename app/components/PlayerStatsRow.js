@@ -40,7 +40,14 @@ export const Item = ({ style, imgUrl, time = "" }) => {
   );
 };
 
-const PlayerStatsRow = ({ style, player, index, showDetails, onPress }) => {
+const PlayerStatsRow = ({
+  style,
+  player,
+  index,
+  showDetails,
+  onPress,
+  onNamePress
+}) => {
   let _styleName = "vertical v-center even";
   if (index % 2) {
     _styleName = "vertical v-center odd";
@@ -89,9 +96,17 @@ const PlayerStatsRow = ({ style, player, index, showDetails, onPress }) => {
               </Text>
             </View>
             <View style={style.statContainer}>
-              <Text styleName="normal" style={style.stat}>
-                {reduceText(player.player, 8)}
-              </Text>
+              {player.accountId ? (
+                <Ripple onPress={onNamePress}>
+                  <Text styleName="action" style={style.stat}>
+                    {reduceText(player.player, 8)}
+                  </Text>
+                </Ripple>
+              ) : (
+                <Text styleName="normal" style={style.stat}>
+                  {reduceText(player.player, 8)}
+                </Text>
+              )}
             </View>
             <View style={style.statContainer}>
               <Text styleName="normal" style={style.stat}>
@@ -271,6 +286,9 @@ const styles = {
     },
     ".gold": {
       color: themeColors.gold
+    },
+    ".action": {
+      color: themeColors.action
     },
     fontSize: 13
   },

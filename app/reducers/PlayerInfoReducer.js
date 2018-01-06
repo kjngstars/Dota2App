@@ -11,14 +11,14 @@ export default function playerInfoState(
         isRefreshingPlayerInfo: true,
         isLoadingPlayerInfo: false,
         isEmptyPlayerInfo: false,
-        playerInfo: {}
+        playerInfo: []
       });
     case ActionTypes.REQUEST_PLAYER_INFO:
       return Object.assign({}, state, {
         isRefreshingPlayerInfo: false,
         isLoadingPlayerInfo: true,
         isEmptyPlayerInfo: false,
-        playerInfo: {}
+        playerInfo: []
       });
     case ActionTypes.RECEIVE_PLAYER_INFO:
       return Object.assign({}, state, {
@@ -32,7 +32,7 @@ export default function playerInfoState(
         isRefreshingPlayerInfo: false,
         isLoadingPlayerInfo: false,
         isEmptyPlayerInfo: true,
-        playerInfo: {}
+        playerInfo: []
       });
     default:
       return state;

@@ -36,10 +36,15 @@ export function fetchPlayerInfo(accountId, refreshing = false) {
       dispatch(requestPlayerInfo());
     }
 
-    var jsonData;
-    return fetchAPI(endpoint)
-      .then(json => {
-        dispatch(receivePlayerInfo(json));
+    const endpoint1 = "players/" + accountId;
+    const endpoint2 = "players/" + accountId + "/wl";
+
+    const p1 = fetchAPI(endpoint1);
+    const p2 = fetchAPI(endpoint2);
+
+    return Promise.all([p1, p2])
+      .then(values => {
+        dispatch(receivePlayerInfo(values));
       })
       .catch(error => {
         console.log("Action - FETCH PLAYER INFO ERROR - " + error);

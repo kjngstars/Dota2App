@@ -72,9 +72,31 @@ export function reduceText(text, maxLength) {
   }
 }
 
-
 export function getSideImage(side) {
   let sideImage = (sideImage = require("../assets/radiant.png"));
   if (side == "dire") sideImage = require("../assets/dire.png");
   return sideImage;
+}
+
+const strings = {
+  rank_tier_0: "Uncalibrated",
+  rank_tier_1: "Herald",
+  rank_tier_2: "Guardian",
+  rank_tier_3: "Crusader",
+  rank_tier_4: "Archon",
+  rank_tier_5: "Legend",
+  rank_tier_6: "Ancient",
+  rank_tier_7: "Divine"
+};
+
+export function rankTierToString(rankTier) {
+  if (rankTier !== parseInt(rankTier, 10)) {
+    return "Unknown";
+  }
+  const intRankTier = parseInt(rankTier, 10);
+  let rank = strings[`rank_tier_${parseInt(intRankTier / 10, 10)}`];
+  if (intRankTier > 9) {
+    rank += ` [${parseInt(intRankTier % 10, 10)}]`;
+  }
+  return rank;
 }

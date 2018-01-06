@@ -11,17 +11,21 @@ import {
   TouchableOpacity
 } from "@shoutem/ui";
 import { FlatList, Keyboard } from "react-native";
+
 import Line from "../components/Line";
 import PlayerRow, { PLAYER_ROW_HEIGHT } from "../components/PlayerRow";
 import Pagination from "../components/Pagination";
 import Loading from "../components/Loading";
+
 import themeColors from "../themes/colors";
 import { createGroupedArray } from "../utils/utilsFunction";
+import { navigateToMenuScreen } from "../actions/NavigationAction";
 
 import { connect } from "react-redux";
 import { connectStyle } from "@shoutem/theme";
 import { bindActionCreators } from "redux";
 import * as searchPlayerActions from "../actions/PlayerSearchAction";
+import ScreenTypes from "../navigators/ScreenTypes";
 
 class PlayerSearch extends React.PureComponent {
   constructor(props) {
@@ -45,6 +49,7 @@ class PlayerSearch extends React.PureComponent {
     this.onPageProPlayers = this.onPageProPlayers.bind(this);
     this.onPagePublicPlayers = this.onPagePublicPlayers.bind(this);
     this.renderItem = this.renderItem.bind(this);
+    this.onRowPress = this.onRowPress.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -53,22 +58,26 @@ class PlayerSearch extends React.PureComponent {
       proPlayers != nextProps.proPlayers ||
       publicPlayers != nextProps.publicPlayers
     ) {
-      if (nextProps.proPlayers.length > 0 && nextProps.publicPlayers.length == 0) {
-        
+      if (
+        nextProps.proPlayers.length > 0 &&
+        nextProps.publicPlayers.length == 0
+      ) {
         this.setState({
           proPlayers: createGroupedArray(nextProps.proPlayers, 20),
           publicPlayers: [],
-          currentIndexProPlayer: 0, currentIndexPublicPlayer: 0
+          currentIndexProPlayer: 0,
+          currentIndexPublicPlayer: 0
         });
       } else {
-        //search in list pro players        
+        //search in list pro players
         this.setState({
           proPlayers: createGroupedArray(
             this.findProPlayers(nextProps.proPlayers, this.state.playerName),
             5
           ),
           publicPlayers: createGroupedArray(nextProps.publicPlayers, 20),
-          currentIndexProPlayer: 0, currentIndexPublicPlayer: 0
+          currentIndexProPlayer: 0,
+          currentIndexPublicPlayer: 0
         });
       }
     }
@@ -88,6 +97,12 @@ class PlayerSearch extends React.PureComponent {
     }
 
     return results;
+  }
+
+  onRowPress(accountId) {
+    this.props.navigation.dispatch(
+      navigateToMenuScreen(ScreenTypes.PlayerOverview, { accountId: accountId })
+    );
   }
 
   onChangeText(text) {
@@ -143,7 +158,13 @@ class PlayerSearch extends React.PureComponent {
   }
 
   renderItem({ item, index }) {
-    return <PlayerRow player={item} index={index} />;
+    return (
+      <PlayerRow
+        player={item}
+        index={index}
+        onPress={() => this.onRowPress(item.account_id)}
+      />
+    );
   }
 
   onSearchPlayer() {
@@ -175,7 +196,6 @@ class PlayerSearch extends React.PureComponent {
           </View>
         );
       } else if (proPlayers.length > 0 && publicPlayers.length == 0) {
-        
         proPlayerResults = (
           <View style={{ marginTop: 5, flex: 1 }}>
             <Text style={{ color: themeColors.orange, fontSize: 18 }}>
@@ -286,7 +306,7 @@ const styles = {
     marginTop: 5,
     maxHeight: 300
   },
-  publicPlayer: {    
+  publicPlayer: {
     flex: 1,
     marginTop: 5
   }

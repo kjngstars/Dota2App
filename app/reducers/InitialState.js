@@ -131,6 +131,6 @@ export default {
     isRefreshingPlayerInfo: false,
     isLoadingPlayerInfo: false,
     isEmptyPlayerInfo: false,
-    playerInfo: {}
+    playerInfo: []
   },
 };

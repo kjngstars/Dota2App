@@ -48,6 +48,7 @@ import _ from "lodash";
 import sectionListGetItemLayout from "react-native-section-list-get-item-layout";
 
 import * as matchDetailsAction from "../actions/MatchDetailsAction";
+import { navigateToMenuScreen } from "../actions/NavigationAction";
 
 // components
 const SideOverviewHeader = ({ side, imgUrl }) => {
@@ -209,6 +210,7 @@ class MatchOverview extends Component {
     this.toggleAbilityPopup = this.toggleAbilityPopup.bind(this);
     this.fetchingData = this.fetchingData.bind(this);
     this.onRefreshing = this.fetchingData.bind(this, true);
+    this.onNamePress = this.onNamePress.bind(this);
 
     this.getItemLayout = sectionListGetItemLayout({
       getItemHeight: (rowData, sectionIndex, rowIndex) => {
@@ -266,6 +268,12 @@ class MatchOverview extends Component {
     if (matchId != 0) {
       this.props.actions.fetchMatchDetails(matchId, refreshing);
     }
+  }
+
+  onNamePress(accountId) {
+    this.props.navigation.dispatch(
+      navigateToMenuScreen(ScreenTypes.PlayerOverview, { accountId })
+    );
   }
 
   onRadiantRowPressed(index) {
@@ -654,12 +662,16 @@ class MatchOverview extends Component {
       data: [],
       key: "4",
       renderItem: ({ item, index }) => {
+        const func = item.accountId
+          ? () => this.onNamePress(item.accountId)
+          : () => {};
         return (
           <PlayerStatsRow
             player={item}
             index={index}
             showDetails={this.state.radiantRow[index]}
             onPress={() => this.onRadiantRowPressed(index)}
+            onNamePress={func}
           />
         );
       }
@@ -669,12 +681,16 @@ class MatchOverview extends Component {
       data: [],
       key: "5",
       renderItem: ({ item, index }) => {
+        const func = item.accountId
+          ? () => this.onNamePress(item.accountId)
+          : () => {};
         return (
           <PlayerStatsRow
             player={item}
             index={index}
             showDetails={this.state.direRow[index]}
             onPress={() => this.onDireRowPressed(index)}
+            onNamePress={func}
           />
         );
       }

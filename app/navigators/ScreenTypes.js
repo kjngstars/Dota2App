@@ -32,4 +32,5 @@ export default {
   DeathsRecord: "DeathsRecord",
   AssistsRecord: "AssistsRecord",
   GPMRecord: "GPMRecord",
+  PlayerOverview: "PlayerOverview"
 };

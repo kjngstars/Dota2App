@@ -1,14 +1,17 @@
 import React, { Component } from "react";
 import { View, Image, Text, Icon, Title, TouchableOpacity } from "@shoutem/ui";
-import themeColors from "../themes/colors";
-import { connectStyle } from "@shoutem/theme";
-import { dimensionRelativeToIphone } from "@shoutem/ui/theme";
 
+import themeColors from "../themes/colors";
+
+import Ripple from "react-native-material-ripple";
+import { connectStyle } from "@shoutem/theme";
+
+import { dimensionRelativeToIphone } from "@shoutem/ui/theme";
 const DRTI = dimensionRelativeToIphone;
 
 export const PLAYER_ROW_HEIGHT = 50;
 
-const PlayerRow = ({ style, player, index }) => {
+const PlayerRow = ({ style, player, onPress, index }) => {
   let style_name = "horizontal space-between v-center even";
   let content = <View />;
   if (index % 2) {
@@ -38,14 +41,16 @@ const PlayerRow = ({ style, player, index }) => {
   }
 
   return (
-    <View styleName={style_name} style={style.container}>
-      {content}
-      <View styleName="horizontal h-end" style={{ flex: 1 }}>
-        <TouchableOpacity>
-          <Icon name="right-arrow" style={{ color: themeColors.white }} />
-        </TouchableOpacity>
+    <Ripple onPress={onPress}>
+      <View styleName={style_name} style={style.container}>
+        {content}
+        <View styleName="horizontal h-end" style={{ flex: 1 }}>
+          <TouchableOpacity>
+            <Icon name="right-arrow" style={{ color: themeColors.white }} />
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </Ripple>
   );
 };
 
